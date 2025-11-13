@@ -120,7 +120,7 @@ const VerifyOTP: React.FC = () => {
 
       if (response.ok) {
         console.log('OTP resent successfully');
-        alert('Đã gửi lại mã OTP');
+        toast.success('Đã gửi lại mã OTP');
         setOtp(new Array(6).fill(''));
         inputRefs.current[0]?.focus();
       } else {
