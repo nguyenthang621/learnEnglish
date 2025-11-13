@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import PromotionBar from "@/components/PromotionBar/PromotionBar";
 import HeaderNavigation from "@/components/HeaderNavigation/HeaderNavigation";
+import Footer from "@/components/Footer/Footer";
 import { ReduxProvider } from "@/stores/ReduxProvider";
 
 const geistSans = Geist({
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Learning English Everyday",
 };
 
-export default function RootLayout({
+export default function HomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -31,10 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         <ReduxProvider>
-          {/* <PromotionBar />
-          <HeaderNavigation /> */}
-            {children}
-          {/* <Footer /> */}
+        <PromotionBar />
+        <HeaderNavigation />
+          {children}
+        {/* <Footer /> */}
         </ReduxProvider>
       </body>
     </html>
