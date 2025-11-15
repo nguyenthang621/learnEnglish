@@ -242,7 +242,7 @@ export default function FeaturedCourses({ courses }: FeaturedCoursesProps) {
             {/* Right Arrow */}
             <button
               onClick={next}
-              className="w-12 h-12 rounded-full bg-[#00ED64] hover:bg-[#00c956] flex items-center justify-center flex-shrink-0 transition-all shadow-lg z-10"
+              className="absolute right-5 w-12 h-12 rounded-full bg-[#00ED64] hover:bg-[#00c956] flex items-center justify-center flex-shrink-0 transition-all shadow-lg z-10"
               aria-label="Next"
             >
               <ChevronRight className="w-6 h-6 text-[#001E2B]" strokeWidth={2.5} />
