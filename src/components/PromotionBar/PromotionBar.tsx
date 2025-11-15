@@ -1,6 +1,6 @@
 export default function PromotionBar() {
   return (
-    <div className="bg-teal-600 text-white text-sm py-2 px-4 flex justify-between items-center position-fixed top-0 left-0 right-0 z-2 primary-bg ">
+    <div className="bg-slate-900 text-white text-sm py-2 px-4 flex justify-between items-center position-fixed top-0 left-0 right-0 z-2 primary-bg ">
 
       <div className="flex items-center gap-2">
         <div className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-semibold">
