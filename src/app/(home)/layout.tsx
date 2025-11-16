@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import PromotionBar from "@/components/PromotionBar/PromotionBar";
 import HeaderNavigation from "@/components/HeaderNavigation/HeaderNavigation";
-import Footer from "@/components/Footer/Footer";
 import { ReduxProvider } from "@/stores/ReduxProvider";
 
 const geistSans = Geist({
@@ -28,7 +27,7 @@ export default function HomeLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
         >
         <ReduxProvider>
         <PromotionBar />

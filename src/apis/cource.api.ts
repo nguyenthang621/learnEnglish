@@ -30,6 +30,12 @@ const courseAPI = {
     getDetailCourse: function(courseId: string){
         return http.get<any>(`/courses/${courseId}`)
     },
+    getDetailLesson: function(courseId: number, lessonId: number){
+        return http.get<any>(`/courses/${courseId}/lessons/${lessonId}`)
+    },
+    getLessons: function(courseId: number){
+        return http.get<any>(`/courses/${courseId}/lessons`)
+    }
 
 }
 

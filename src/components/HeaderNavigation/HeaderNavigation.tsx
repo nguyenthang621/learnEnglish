@@ -60,12 +60,12 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
   return (
     <>
       {/* Header Navigation */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 right-0">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
               <Link
-                className="text-2xl font-bold text-blue-600 cursor-pointer"
+                className="text-2xl font-bold text-gray-100 cursor-pointer"
                 href={`${path.home}`}
               >
                 Zenlish
@@ -156,7 +156,7 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
                 {
                   !isLogin && 
                 <span
-                  className="cursor-pointer hover:text-blue-600 text-sm"
+                  className="cursor-pointer hover:text-gray-300 text-sm text-gray-100"
                   onClick={() => handleLogin()}
                 >
                   Đăng nhập

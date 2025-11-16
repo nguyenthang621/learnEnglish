@@ -7,7 +7,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { ReduxProvider } from "@/stores/ReduxProvider";
 import { useRef } from "react";
 
-function AuthLayout({
+function CourseLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -27,13 +27,13 @@ function AuthLayout({
         
       <div
       ref={isScroll ? scrollRef : undefined}
-      className={`relative max-h-[100vh] ${
+      className={`max-h-[100vh] ${
         isScroll ? "max-h-[100vh] overflow-y-auto no-scrollbar" : ""
       }`}
     >
       {isLoading && <iframe className="absolute top-0 right-0 h-[100vh] mt-[100px]" src="src/components/Loading/Loading.html" width="100%"  />}
       {isShowModalVocabulary && <ModalInsertVocabulary />}
-      <div className="">
+      <div className="sticky top-0 z-9999">
         <HeaderNavigation ref={coinRef}/>
         <Navbar />
       </div>
@@ -48,4 +48,4 @@ function AuthLayout({
   );
 }
 
-export default AuthLayout;
+export default CourseLayout;
