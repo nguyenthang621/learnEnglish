@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { Course } from './ListCourses';
 import courseAPI from '@/apis/cource.api';
+import { LessonPageProps } from '@/app/courses/[courseId]/lessons/[lessonId]/page';
+import { useRouter } from 'next/navigation';
 
 // // Mock data từ API
 // const lessonData = {
@@ -350,7 +352,9 @@ export interface LessonDetailResponse {
 }
 
 
-export default function LessonDetailPage() {
+export default function LessonDetailPage({courseId, lessonId}: {courseId: string; lessonId: string}) {
+
+
   const [currentSection, setCurrentSection] = useState(0);
   const [lessonData, setLessonData] = useState<LessonDetailResponse | null>(null) 
   const [studyTime, setStudyTime] = useState(lessonData?.progress.time_spent_minutes || 0);
@@ -361,9 +365,9 @@ export default function LessonDetailPage() {
 
   const fetchLessons = async () => {
     try {
+      if (!courseId || !lessonId) return
       setLoading(true);
-      const response = await courseAPI.getDetailLesson(1, 1);
-      console.log(">>", response);
+      const response = await courseAPI.getDetailLesson(Number(courseId), Number(lessonId));
       if (response.status === 200 && response.data.data) {    
         setLessonData(response.data.data);
       }
@@ -399,6 +403,11 @@ export default function LessonDetailPage() {
 
   const isCurrentSectionCompleted = completedSections.includes(sections[currentSection]?.id);
 
+  const router = useRouter();
+  const handleClickBack = ()=>{
+      router.push(`/courses`);
+  }
+
   return (
     <div className="min-h-screen bg-[#f8fafb]">
       {/* Top Navigation */}
@@ -406,9 +415,9 @@ export default function LessonDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back Button */}
-            <button className="flex items-center gap-2 text-[#5C6C75] hover:text-[#00684A] transition-colors font-medium">
+            <button className="flex items-center gap-2 text-[#5C6C75] hover:text-[#00684A] transition-colors font-medium cursor-pointer">
               <ArrowLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">Quay lại khóa học</span>
+              <span onClick={()=> handleClickBack()} className="hidden sm:inline">Quay lại khóa học</span>
             </button>
 
             {/* Progress */}

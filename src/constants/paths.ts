@@ -25,5 +25,9 @@ export const path = {
   verifyotp: "/auth/verify",
   register: "/auth/register",
   logout: "/auth/logout",
-  authsuccess: "/auth/success"
+  authsuccess: "/auth/success",
+
+  listLesson: "/courses/:courseId/lessons",
+  courses: "courses"
+
 } as const;

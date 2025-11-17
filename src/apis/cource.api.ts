@@ -27,7 +27,7 @@ const courseAPI = {
 
     return http.get(`/courses?${params.toString()}`);
     },
-    getDetailCourse: function(courseId: string){
+    getDetailCourse: function(courseId: number){
         return http.get<any>(`/courses/${courseId}`)
     },
     getDetailLesson: function(courseId: number, lessonId: number){

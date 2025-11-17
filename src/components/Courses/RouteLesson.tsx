@@ -19,6 +19,7 @@ import {
   X
 } from 'lucide-react';
 import courseAPI from '@/apis/cource.api';
+import { useRouter } from 'next/navigation';
 
 
 export interface ContentGrammar {
@@ -105,15 +106,21 @@ const courseInfo = {
   enrolledStudents: 162
 };
 
-const LessonTimelineItem = ({ lessonData, index, isLocked, isActive }: any) => {
+const LessonTimelineItem = ({ lessonData, index, isLocked, isActive, courseId }: any) => {
   const { lesson, progress } = lessonData;
   const isCompleted = progress?.completed || false;
   const completionPercentage = progress?.completion_percentage || 0;
   const isInProgress = !isCompleted && completionPercentage > 0;
   const canAccess = lesson.is_preview || !isLocked;
+  const router = useRouter();
+
+  const handleClickLesson = (courseId: number, lessonId: number)=>{
+      if (!courseId || !lessonId) return 
+      router.push(`/courses/${courseId}/lessons/${lessonId}`);
+  }
 
   return (
-    <div className="flex gap-4 group">
+    <div className="flex gap-4 group" onClick={()=> handleClickLesson(courseId, lesson.id)}>
       {/* Timeline Line */}
       <div className="flex flex-col items-center">
         {/* Circle */}
@@ -275,7 +282,11 @@ const LessonTimelineItem = ({ lessonData, index, isLocked, isActive }: any) => {
   );
 };
 
-export default function CourseLessonsPage() {
+
+
+
+export default function CourseLessonsPage({ courseId }: {courseId: string}) {
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeLesson, setActiveLesson] = useState(2);
   const [lessonsData, setLessonsData] = useState<LessonResponse[] | []>([])
@@ -291,6 +302,20 @@ export default function CourseLessonsPage() {
     try {
       setLoading(true);
       const response = await courseAPI.getLessons(1);
+      if (response.status === 200 && response.data.data) {    
+        setLessonsData(response.data.data);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching groups:", error);
+      setLoading(false);
+    }
+  }
+
+  const fetchDetailCouse = async () => {
+    try {
+      setLoading(true);
+      const response = await courseAPI.getDetailCourse(1);
       if (response.status === 200 && response.data.data) {    
         setLessonsData(response.data.data);
       }
@@ -458,6 +483,7 @@ export default function CourseLessonsPage() {
                     index={index}
                     isLocked={isLocked}
                     isActive={isActive}
+                    courseId={courseId}
                   />
                 );
               })}

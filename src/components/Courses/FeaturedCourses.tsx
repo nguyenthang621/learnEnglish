@@ -225,7 +225,7 @@ export default function FeaturedCourses({ courses }: FeaturedCoursesProps) {
                             )}
                           </div>
                           <Link
-                            href={`/courses/${course.slug}`}
+                            href={`/courses/${course.id}/lessons`}
                             className="inline-flex items-center gap-2 text-[#00684A] font-semibold hover:gap-3 transition-all group/link"
                           >
                             <span>Bắt đầu học</span>

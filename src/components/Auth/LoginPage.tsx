@@ -67,7 +67,7 @@ const LoginPage: React.FC = () => {
         
       } else {
         console.log("err?.data?.response?.data?.message ", response);
-        // setError(data.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+        setError(response.data.error || "Đăng nhập thất bại. Vui lòng thử lại.");
       }
     } catch (err: any) {
       let errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";

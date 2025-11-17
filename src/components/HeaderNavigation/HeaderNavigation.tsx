@@ -72,27 +72,27 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
               </Link>
 
             {/* Navigation Menu */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden md:flex items-center space-x-6 text-slate-50">
              <Link
-                className="cursor-pointer hover:text-blue-600"
-                href={`${path.practices}`}
+                className="cursor-pointer hover:text-green-600"
+                href={`${path.courses}`}
               >
                 Khóa học
               </Link>
              <Link
-                className="cursor-pointer hover:text-blue-600"
+                className="cursor-pointer hover:text-green-600"
                 href={`${path.vocabulary}`}
               >
                 Từ vựng
               </Link>
              <Link
-                className="cursor-pointer hover:text-blue-600"
+                className="cursor-pointer hover:text-green-600"
                 href={`${path.shadowingpage}`}
               >
                 Nói theo
               </Link>
               <Link
-                className="cursor-pointer hover:text-blue-600"
+                className="cursor-pointer hover:text-green-600"
                 href={`${path.lofichill}`}
               >
                 Âm nhạc

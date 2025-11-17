@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Users, Clock, BookOpen, Star, Award, Filter } from 'lucide-react';
 import courseAPI from '@/apis/cource.api';
+import { path } from '@/constants/paths';
+import { useRouter } from 'next/navigation';
 
 
 export interface Course {
@@ -31,6 +33,7 @@ export interface Course {
 
 
 const CourseCard = ({ course }: any) => {
+  const router = useRouter();
   const formatPrice = (price: any) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -46,6 +49,10 @@ const CourseCard = ({ course }: any) => {
     };
     return colors[level] || 'bg-[#e3e6ea] text-[#001E2B]';
   };
+
+  const handleClickCourse = (courseId: number)=>{
+      router.push(`/courses/${courseId}/lessons`);
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-[#e3e6ea]">
@@ -136,7 +143,7 @@ const CourseCard = ({ course }: any) => {
               </div>
             )}
           </div>
-          <button className="bg-[#00684A] hover:bg-[#005a3f] text-white px-6 py-2 rounded-md font-semibold transition-colors shadow-sm">
+          <button className="bg-[#00684A] hover:bg-[#005a3f] text-white px-6 py-2 rounded-md font-semibold transition-colors shadow-sm cursor-pointer" onClick={()=> handleClickCourse(course.id)}>
             Xem chi tiết
           </button>
         </div>

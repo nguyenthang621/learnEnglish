@@ -1,5 +1,11 @@
-import CourseLessonsPage from "@/components/Courses/Lesson";
+import CourseLessonsPage from "@/components/Courses/RouteLesson";
 
-export default function LessonsPage() {
-  return <CourseLessonsPage />;
+interface PageProps {
+  params: Promise<{ courseId: string }>;
+}
+
+export default async function LessonsPage({ params }: PageProps) {
+  const { courseId } = await params;
+
+  return <CourseLessonsPage courseId={courseId}/>;
 }

@@ -135,13 +135,13 @@ const VerifyOTP: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-indigo-600"
+              className="w-8 h-8 text-green-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -161,7 +161,7 @@ const VerifyOTP: React.FC = () => {
             Chúng tôi đã gửi mã xác thực đến
           </p>
           {email && (
-            <p className="text-indigo-600 font-medium text-sm mt-1">
+            <p className="text-green-600 font-medium text-sm mt-1">
               {email}
             </p>
           )}
@@ -187,7 +187,7 @@ const VerifyOTP: React.FC = () => {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
-              className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all"
+              className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 transition-all"
             />
           ))}
         </div>
@@ -196,7 +196,7 @@ const VerifyOTP: React.FC = () => {
         <button
           onClick={handleSubmit}
           disabled={loading || otp.join('').length !== 6}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors mb-4 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors mb-4 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
@@ -235,7 +235,7 @@ const VerifyOTP: React.FC = () => {
           <button
             onClick={handleResend}
             disabled={loading}
-            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm underline disabled:text-gray-400 disabled:cursor-not-allowed"
+            className="text-green-600 hover:text-green-700 font-medium text-sm underline disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             Gửi lại mã OTP
           </button>
