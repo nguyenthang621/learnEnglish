@@ -119,7 +119,7 @@ const LoginPage: React.FC = () => {
           <RiveWrapper
             src="/students-notebook-pencil.riv"
             autoplay
-            style={{ width: 400, height: 400 }}
+            style={{ width: 400, height: 400, background: "transparent" }}
           />
         </div>
       </div>
