@@ -1,5 +1,6 @@
 import LoginPage from "@/components/Auth/LoginPage";
 
 export default function AuthLoginPage() {
-  return <LoginPage />;
+  // return <AuthForm />;
+  return <LoginPage/>
 }

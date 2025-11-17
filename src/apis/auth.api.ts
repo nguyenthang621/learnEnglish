@@ -18,7 +18,7 @@ const auth = {
   refreshToken: function () {
     try {
       const refresh_token = CookiesStorage.getItem("refresh_token");
-      return http.post("/api/auth/user/refresh-token", { refresh_token });
+      return http.post("auth/refresh", { refresh_token });
     } catch (error) {
       CookiesStorage.clear();
       window.location.href = "/auth/login";

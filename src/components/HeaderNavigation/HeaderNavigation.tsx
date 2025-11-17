@@ -188,7 +188,7 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
                     </div>
                   }
                 >
-                  <div className='h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-slate-400'>
+                  <div className='h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-slate-400 relative'>
                     <div className='flex h-full w-full items-center justify-center'>
                       {/* {profile?.avatar ? ( */}
                       {false ? (

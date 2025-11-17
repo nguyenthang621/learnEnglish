@@ -6,6 +6,8 @@ import { User } from "@/types/user.type";
 import { path } from "@/constants/paths";
 import { useRouter } from "next/navigation";
 import { CookiesStorage } from "@/utils/cookiesStorage";
+import RiveWrapper from '@/components/Animation/RiveWrapper';
+
 
 interface LoginData {
   email: string;
@@ -113,6 +115,12 @@ const LoginPage: React.FC = () => {
             Not just learning English, but enjoying the journey
           </h2>
           <p className="text-purple-700 text-lg">One Chill Session At A Time</p>
+
+          <RiveWrapper
+            src="/students-notebook-pencil.riv"
+            autoplay
+            style={{ width: 400, height: 400 }}
+          />
         </div>
       </div>
 

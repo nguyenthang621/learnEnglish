@@ -87,8 +87,7 @@ class Http {
         }
         // Xử lý refresh token
         else if (
-          error.response.status === 401 &&
-          error.response.data.message === "Unauthorized"
+          error.response.status === 401
         ) {
           this.refresh_tokenRequest = this.refresh_tokenRequest
             ? this.refresh_tokenRequest
