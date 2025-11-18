@@ -1,4 +1,3 @@
-// app/test-attempt/[attemptId]/page.tsx
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -68,7 +67,6 @@ export default function TestAttemptPage({
       setLoading(true);
       const response = await testAPI.startTest(Number(testId));
 
-      console.log("response: ", response);
       if (response.status === 200 && response.data.data) {    
         setQuestions(response.data.data.questions || []);
         setAttempt_id(response.data.data.attempt_id)
@@ -91,10 +89,10 @@ export default function TestAttemptPage({
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          handleAutoSubmit();
-          return 0;
-        }
+        // if (prev <= 1) {  // handle end
+        //   handleAutoSubmit();
+        //   return 0;
+        // }
         return prev - 1;
       });
     }, 1000);
@@ -113,11 +111,13 @@ export default function TestAttemptPage({
   const saveAnswer = useCallback(async (questionId: number, answer: any) => {
     setIsSaving(true);
     try {
-      await fetch(`/api/test-attempts/${attempt_id}/save-answer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question_id: questionId, answer })
-      });
+      // await fetch(`/api/test-attempts/${attempt_id}/save-answer`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ question_id: questionId, answer })
+      // });
+      const response = await testAPI.saveAnswer(Number(testId),questionId, answer, 0)
+      console.log("response: ", response);
     } catch (error) {
       console.error('Failed to save answer:', error);
     } finally {
@@ -204,10 +204,10 @@ export default function TestAttemptPage({
   const unansweredCount = questions.length - answeredCount;
 
   return (
-    <div className="min-h-screen bg-[#f8fafb] flex flex-col">
+    <div className="min-h-screen bg-[#f8fafb] flex flex-col items-center">
       {/* Header - MongoDB Style */}
-      <header className="bg-white border-b border-[#e3e6ea] sticky top-0 z-30 shadow-sm">
-        <div className="max-w-full mx-auto px-8">
+      <header className="bg-white border-b border-[#e3e6ea] sticky top-0 z-30 shadow-sm w-full">
+        <div className="max-w-7xl mx-auto px-8">
           <div className="flex items-center justify-between py-5">
             {/* Left: Test title & info */}
             <div className="flex items-center gap-6">
@@ -253,11 +253,11 @@ export default function TestAttemptPage({
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex w-[65%] px-8 py-8">
         {/* Left: Question Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-8">
+        <main className="flex-1 overflow-y-auto">
           {currentQuestion && (
-            <div className="max-w-4xl">
+            <div className="max-w-7xl">
               {/* Question Card - MongoDB Style */}
               <div className="bg-white rounded-2xl border border-[#e3e6ea] shadow-sm overflow-hidden">
                 {/* Question Header */}
@@ -302,7 +302,7 @@ export default function TestAttemptPage({
                 </div>
 
                 {/* Question Content */}
-                <div className="px-8 py-8">
+                <div className="px-8 py-8 min-h-[50vh]">
                   {/* Question Text */}
                   <div className="mb-8">
                     <div className="text-lg text-[#001E2B] leading-relaxed font-medium whitespace-pre-wrap">
@@ -558,26 +558,26 @@ export default function TestAttemptPage({
         </main>
 
         {/* Right Sidebar: Question List - MongoDB Style */}
-        <aside className="w-96 bg-white border-l border-[#e3e6ea] overflow-y-auto">
-          <div className="p-8">
+        <aside className="ml-10 w-80 h-[70vh] bg-white border-l border-[#e3e6ea] overflow-y-auto rounded-lg">
+          <div className="p-5">
             {/* Progress Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00684A] to-[#004d34] rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
+            <div className="mb-5">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-9 h-9 bg-gradient-to-br from-[#00684A] to-[#004d34] rounded-lg flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#001E2B]">
+                  <h3 className="text-base font-bold text-[#001E2B]">
                     Danh sách câu hỏi
                   </h3>
-                  <p className="text-sm text-[#5C6C75]">
-                    Tiến độ: <span className="font-bold text-[#00684A]">{answeredCount}/{questions.length}</span>
+                  <p className="text-xs text-[#5C6C75]">
+                    <span className="font-bold text-[#00684A]">{answeredCount}/{questions.length}</span> câu
                   </p>
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="h-2 bg-[#e3e6ea] rounded-full overflow-hidden">
+              <div className="h-1.5 bg-[#e3e6ea] rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-[#00684A] to-[#5ab55e] transition-all duration-500 ease-out"
                   style={{ width: `${(answeredCount / questions.length) * 100}%` }}
@@ -586,7 +586,7 @@ export default function TestAttemptPage({
             </div>
 
             {/* Question Grid */}
-            <div className="grid grid-cols-3 gap-3 mb-8">
+            <div className="grid grid-cols-4 gap-2 mb-5">
               {questions.map((question, index) => {
                 const status = getQuestionStatus(index);
                 const isAnswered = status === 'answered' || status === 'flagged';
@@ -598,12 +598,12 @@ export default function TestAttemptPage({
                     key={question.id}
                     onClick={() => goToQuestion(index)}
                     className={`
-                      relative aspect-square rounded-xl font-bold text-base
+                      relative aspect-square rounded-lg font-bold text-sm
                       transition-all duration-200
-                      ${isCurrent ? 'ring-4 ring-[#00684A] ring-offset-2' : ''}
+                      ${isCurrent ? 'ring-2 ring-[#00684A] ring-offset-1' : ''}
                       ${isAnswered 
-                        ? 'bg-gradient-to-br from-[#00684A] to-[#5ab55e] text-white shadow-md hover:shadow-lg' 
-                        : 'bg-[#f3f4f6] text-[#889397] border-2 border-[#e3e6ea] hover:border-[#c1c7cd] hover:bg-white'
+                        ? 'bg-gradient-to-br from-[#00684A] to-[#5ab55e] text-white shadow-sm hover:shadow-md' 
+                        : 'bg-[#f3f4f6] text-[#889397] border border-[#e3e6ea] hover:border-[#c1c7cd] hover:bg-white'
                       }
                     `}
                   >
@@ -611,7 +611,7 @@ export default function TestAttemptPage({
                       {index + 1}
                     </span>
                     {isFlagged && (
-                      <Flag className="w-3.5 h-3.5 absolute top-1.5 right-1.5 fill-[#FFE212] text-[#FFE212]" />
+                      <Flag className="w-3 h-3 absolute top-1 right-1 fill-[#FFE212] text-[#FFE212]" />
                     )}
                   </button>
                 );
@@ -619,28 +619,28 @@ export default function TestAttemptPage({
             </div>
 
             {/* Legend */}
-            <div className="space-y-3 mb-8 p-5 bg-[#f8fafb] rounded-xl border border-[#e3e6ea]">
-              <h4 className="font-bold text-[#001E2B] mb-3 text-sm uppercase tracking-wide">Chú thích</h4>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00684A] to-[#5ab55e] rounded-lg"></div>
-                <span className="text-sm text-[#5C6C75] font-medium">Đã trả lời</span>
+            <div className="space-y-2 mb-5 p-3 bg-[#f8fafb] rounded-lg border border-[#e3e6ea]">
+              <h4 className="font-semibold text-[#001E2B] mb-2 text-xs uppercase tracking-wide">Chú thích</h4>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#00684A] to-[#5ab55e] rounded-md flex-shrink-0"></div>
+                <span className="text-xs text-[#5C6C75] font-medium">Đã trả lời</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#f3f4f6] border-2 border-[#e3e6ea] rounded-lg"></div>
-                <span className="text-sm text-[#5C6C75] font-medium">Chưa trả lời</span>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-[#f3f4f6] border border-[#e3e6ea] rounded-md flex-shrink-0"></div>
+                <span className="text-xs text-[#5C6C75] font-medium">Chưa trả lời</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00684A] to-[#5ab55e] rounded-lg relative ring-4 ring-[#00684A] ring-offset-2"></div>
-                <span className="text-sm text-[#5C6C75] font-medium">Câu hiện tại</span>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#00684A] to-[#5ab55e] rounded-md relative ring-2 ring-[#00684A] ring-offset-1 flex-shrink-0"></div>
+                <span className="text-xs text-[#5C6C75] font-medium">Câu hiện tại</span>
               </div>
             </div>
 
             {/* Submit Button */}
             <button
               onClick={() => setShowSubmitDialog(true)}
-              className="w-full py-4 bg-gradient-to-r from-[#FF6F00] to-[#E91E63] hover:shadow-xl text-white rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 group"
+              className="w-full py-3 bg-gradient-to-r from-[#FF6F00] to-[#E91E63] hover:shadow-lg text-white rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 group"
             >
-              <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+              <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               Nộp bài ngay
             </button>
           </div>

@@ -7,6 +7,7 @@ import { path } from "@/constants/paths";
 import { useRouter } from "next/navigation";
 import { CookiesStorage } from "@/utils/cookiesStorage";
 import RiveWrapper from '@/components/Animation/RiveWrapper';
+import Link from "next/link";
 
 
 interface LoginData {
@@ -92,50 +93,89 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 bg-green-500 relative overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-red-400 rounded-full opacity-80"></div>
-        <div className="absolute top-32 right-20 w-12 h-12 bg-pink-400 rounded-full opacity-70"></div>
-        <div className="absolute bottom-32 right-32 w-16 h-16 bg-orange-400 rounded-full opacity-60"></div>
-        <div className="absolute bottom-20 left-20 w-20 h-20 bg-green-300 rounded-full opacity-50"></div>
+<div className="min-h-screen flex flex-col bg-white">
+  {/* Header Navigation */}
+  <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 z-10">
+    <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center justify-between">
+        {/* Logo */}
+        <RiveWrapper
+          src="/juli-logo.riv"
+          autoplay
+          style={{ width: 40, height: 40, background: "transparent" }}
+        />
+        <Link
+          className="text-2xl font-bold text-gray-100 cursor-pointer"
+          href={path.home}
+        >
+          Học Cùng Bạn
+        </Link>
 
-        {/* Decorative lines */}
-        <div className="absolute top-20 right-40 w-16 h-0.5 bg-white opacity-30 rotate-45"></div>
-        <div className="absolute top-40 left-32 w-12 h-0.5 bg-white opacity-30 rotate-12"></div>
-        <div className="absolute bottom-40 right-16 w-20 h-0.5 bg-white opacity-30 -rotate-12"></div>
-
-        {/* Main Content */}
-        <div className="flex flex-col items-center justify-center w-full p-8 text-center">
-          {/* Skeleton Character */}
-
-          {/* Text */}
-          <h2 className="text-2xl font-bold text-purple-800 mb-2">
-            Not just learning English, but enjoying the journey
-          </h2>
-          <p className="text-purple-700 text-lg">One Chill Session At A Time</p>
-
-          <RiveWrapper
-            src="/students-notebook-pencil.riv"
-            autoplay
-            style={{ width: 400, height: 400, background: "transparent" }}
-          />
         </div>
-      </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50 !text-black">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-lg shadow-lg p-8">
+        {/* Navigation Menu */}
+        <nav className="hidden md:flex items-center space-x-6 text-slate-50">
+          <Link
+            className="cursor-pointer hover:text-green-600"
+            href={path.shadowingpage}
+          >
+            Hướng dẫn
+          </Link>
+          <Link
+            className="cursor-pointer hover:text-green-600"
+            href={path.lofichill}
+          >
+            Về Chúng Tôi
+          </Link>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  {/* Main content: 2 cột */}
+  <div className="flex flex-1 relative p-8">
+    {/* Left Side - Illustration */}
+    <div className="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-10 left-10 w-32 h-32 bg-red-400 rounded-full opacity-80"></div>
+      <div className="absolute top-32 right-20 w-12 h-12 bg-pink-400 rounded-full opacity-70"></div>
+      <div className="absolute bottom-32 right-32 w-16 h-16 bg-orange-400 rounded-full opacity-60"></div>
+      <div className="absolute bottom-20 left-20 w-20 h-20 bg-green-300 rounded-full opacity-50"></div>
+
+      {/* Decorative lines */}
+      <div className="absolute top-20 right-40 w-16 h-0.5 bg-white opacity-30 rotate-45"></div>
+      <div className="absolute top-40 left-32 w-12 h-0.5 bg-white opacity-30 rotate-12"></div>
+      <div className="absolute bottom-40 right-16 w-20 h-0.5 bg-white opacity-30 -rotate-12"></div>
+
+      {/* Main Content */}
+      <div className="flex flex-col items-center justify-center w-full p-8 text-center">
+        <h2 className="text-2xl font-bold text-purple-800 mb-2">
+          Not just learning English, but enjoying the journey
+        </h2>
+        <p className="text-purple-700 text-lg">One Chill Session At A Time</p>
+
+        <RiveWrapper
+          src="/students-notebook-pencil.riv"
+          autoplay
+          style={{ width: 400, height: 400, background: "transparent" }}
+        />
+      </div>
+    </div>
+
+    {/* Right Side - Login Form */}
+    <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white !text-black">
+        <div className="w-full max-w-[50%]">
+          <div className="bg-white rounded-lg shadow-lg p-8 border-[1px] border-gray-100">
             <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              Login to your Account
+              Đăng nhập
             </h1>
 
             {/* Google Login Button */}
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg mb-4 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg mb-4 hover:bg-white transition-colors"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
@@ -277,8 +317,10 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
     </div>
+  </div>
+</div>
+
   );
 };
 

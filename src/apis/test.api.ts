@@ -27,6 +27,13 @@ const testAPI = {
     startTest: function(testId: number){
         return http.post<any>(`/auth/tests/${testId}/start`)
     },
+    saveAnswer: function(testId: number, question_id: number, answer: any, time_taken_seconds: number){
+        return http.post<any>(`/auth/test-attempts/${testId}/answer`, {
+            question_id,
+            answer,
+            time_taken_seconds
+        })
+    }
 }
 
 export default testAPI

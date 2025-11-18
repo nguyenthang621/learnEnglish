@@ -10,6 +10,8 @@ import userapi from "@/apis/user.api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AnimatedNumber from "../AnimatedNumber";
+import RiveWrapper from '@/components/Animation/RiveWrapper';
+
 
 
 interface HeaderNavigationProps {
@@ -60,16 +62,24 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
   return (
     <>
       {/* Header Navigation */}
-      <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 right-0">
+      <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 z-9999">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
             {/* Logo */}
-              <Link
-                className="text-2xl font-bold text-gray-100 cursor-pointer"
-                href={`${path.home}`}
-              >
-                Zenlish
-              </Link>
+            <RiveWrapper
+              src="/juli-logo.riv"
+              autoplay
+              style={{ width: 40, height: 40, background: "transparent" }}
+            />
+            <Link
+              className="text-2xl font-bold text-gray-100 cursor-pointer"
+              href={path.home}
+            >
+              Học Cùng Bạn
+            </Link>
+
+            </div>
 
             {/* Navigation Menu */}
             <nav className="hidden md:flex items-center space-x-6 text-slate-50">
