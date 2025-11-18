@@ -87,17 +87,21 @@ class Http {
         }
         // Xử lý refresh token
         else if (
-          error.response.status === 401
+          error.response.status === 401 
         ) {
+          console.log(">>", error?.response?.data);
           this.refresh_tokenRequest = this.refresh_tokenRequest
             ? this.refresh_tokenRequest
             : auth.refreshToken().finally(() => {
                 this.refresh_tokenRequest = null;
               });
           //
+          console.log("refreshing token");
           return this.refresh_tokenRequest
             .then((data: any) => {
-              const { access_token } = data.data.data;
+              console.log("data: ", data);
+              const { access_token } = data.data;
+              console.log("new token ", data);
               this.access_token = access_token;
               CookiesStorage.setItem("access_token", access_token);
 

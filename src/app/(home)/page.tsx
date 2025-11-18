@@ -4,6 +4,7 @@ import Footer from '@/components/Footer/Footer';
 import { AIVectorSection, DeveloperSection, HeroSection, MongoDBAtlasSection } from '@/components/Home/ComponentHomes';
 import courseAPI from '@/apis/cource.api';
 import FeaturedCourses, { Course } from '@/components/Courses/FeaturedCourses';
+import userapi from '@/apis/user.api';
 
 
 
@@ -26,7 +27,24 @@ const Home: React.FC = () => {
     }
   }
 
+  const initConfig = async () => {
+    try {
+      setLoading(true);
+      const response = await userapi.initHome();
+      console.log("response: ", response);
+      // if (response.status === 200 && response.data.data) {    
+      //   setFeaturedCourses([...response.data.data, ...response.data.data, ...response.data.data]);
+      // }
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching initConfig:", error);
+      setLoading(false);
+    }
+  }
+
+
   useEffect(() => {
+    initConfig()
     fetchFeaturedCorse();
   }, []);
 

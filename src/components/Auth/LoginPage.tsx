@@ -18,8 +18,8 @@ interface LoginResponse {
   message: string;
   statusCode: any;
   data: {
-    accessToken: string;
-    refreshToken: string;
+    access_token: string;
+    refresh_token: string;
     user: User;
   };
 }
@@ -58,8 +58,8 @@ const LoginPage: React.FC = () => {
 
       if (response.status === 200 && response.statusText === "OK") {
         // Store token if provided
-        if (data.data && data.data.accessToken) {
-            CookiesStorage.setItem("access_token", data.data.accessToken);
+        if (data.data && data.data.access_token) {
+            CookiesStorage.setItem("access_token", data.data.access_token);
         }
         
         // Redirect or update app state here

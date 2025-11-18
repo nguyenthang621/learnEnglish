@@ -87,6 +87,12 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
               </Link>
              <Link
                 className="cursor-pointer hover:text-green-600"
+                href={`${path.tests}`}
+              >
+                Bài Kiểm tra
+              </Link>
+             <Link
+                className="cursor-pointer hover:text-green-600"
                 href={`${path.shadowingpage}`}
               >
                 Nói theo

@@ -28,6 +28,7 @@ export const path = {
   authsuccess: "/auth/success",
 
   listLesson: "/courses/:courseId/lessons",
-  courses: "courses"
+  courses: "/courses",
+  tests: "/tests"
 
 } as const;

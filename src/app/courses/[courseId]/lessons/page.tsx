@@ -6,6 +6,5 @@ interface PageProps {
 
 export default async function LessonsPage({ params }: PageProps) {
   const { courseId } = await params;
-
   return <CourseLessonsPage courseId={courseId}/>;
 }

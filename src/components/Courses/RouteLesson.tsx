@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import courseAPI from '@/apis/cource.api';
 import { useRouter } from 'next/navigation';
+import { CourseDetailResponse } from '@/types/course.type';
+import testAPI from '@/apis/test.api';
 
 
 export interface ContentGrammar {
@@ -95,16 +97,6 @@ export interface LessonResponse {
   progress: Progress | null;
 }
 
-
-const courseInfo = {
-  id: 1,
-  title: "Khóa học Lập trình Laravel từ A đến Z",
-  instructor: "Admin User",
-  totalLessons: 25,
-  totalDuration: 1200,
-  completedLessons: 1,
-  enrolledStudents: 162
-};
 
 const LessonTimelineItem = ({ lessonData, index, isLocked, isActive, courseId }: any) => {
   const { lesson, progress } = lessonData;
@@ -283,25 +275,25 @@ const LessonTimelineItem = ({ lessonData, index, isLocked, isActive, courseId }:
 };
 
 
-
-
 export default function CourseLessonsPage({ courseId }: {courseId: string}) {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeLesson, setActiveLesson] = useState(2);
   const [lessonsData, setLessonsData] = useState<LessonResponse[] | []>([])
+  const [courseDetail, setCourseDetail]= useState<CourseDetailResponse | null>(null)
 
-  const completedCount = lessonsData.filter(l => l.progress?.completed).length;
-  const inProgressCount = lessonsData.filter(l => l.progress && !l.progress.completed && l.progress.completion_percentage > 0).length;
-  const notStartedCount = lessonsData.filter(l => !l.progress).length;
-  const overallProgress = Math.round((courseInfo.completedLessons / courseInfo.totalLessons) * 100);
+  const completedCount =  courseDetail?.progress_stats ? courseDetail.progress_stats.completed : 0 ;
+  const inProgressCount = courseDetail?.progress_stats ? courseDetail.progress_stats.in_progress : 0;
+  const notStartedCount = courseDetail?.progress_stats ? courseDetail.progress_stats.not_started : 0;
+  const overallProgress = courseDetail?.progress_stats ?  Math.round((completedCount / courseDetail?.progress_stats.total_lessons) * 100) : 0;
   const [loading, setLoading] = useState(true);
   
 
   const fetchLessons = async () => {
     try {
+      if (!courseId) return 
       setLoading(true);
-      const response = await courseAPI.getLessons(1);
+      const response = await courseAPI.getLessons(Number(courseId));
       if (response.status === 200 && response.data.data) {    
         setLessonsData(response.data.data);
       }
@@ -312,24 +304,50 @@ export default function CourseLessonsPage({ courseId }: {courseId: string}) {
     }
   }
 
-  const fetchDetailCouse = async () => {
+  const fetchDetailCourse = async () => {
     try {
       setLoading(true);
       const response = await courseAPI.getDetailCourse(1);
       if (response.status === 200 && response.data.data) {    
-        setLessonsData(response.data.data);
+        setCourseDetail(response.data.data as CourseDetailResponse);
       }
       setLoading(false);
     } catch (error) {
-      console.log("Error fetching groups:", error);
+      console.log("Error fetching detail course:", error);
       setLoading(false);
     }
   }
 
+  const fetchTestDetail = async () => {
+    try {
+      setLoading(true);
+      const response = await testAPI.startTest(Number(55));
+
+      console.log("response: ", response);
+    //   if (response.status === 200 && response.data.data) {    
+    //     const data: TestsPageProps = {
+    //       tests: response.data.data,
+    //       meta: response.data.meta
+    //     }
+    //     setTestData(data as TestsPageProps);
+    //   }
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching detail course:", error);
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
+    fetchTestDetail()
+    fetchDetailCourse()
     fetchLessons()
   }, []);
+
+  const router = useRouter();
+  const handleClickBack = ()=>{
+      router.push(`/courses`);
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafb]">
@@ -338,14 +356,14 @@ export default function CourseLessonsPage({ courseId }: {courseId: string}) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Back Button */}
-            <button className="flex items-center gap-2 text-[#5C6C75] hover:text-[#00684A] transition-colors font-medium">
+            <button className="flex items-center gap-2 text-[#5C6C75] hover:text-[#00684A] transition-colors font-medium cursor-pointer" onClick={()=> handleClickBack()}>
               <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Quay lại</span>
             </button>
 
             {/* Course Title */}
             <h1 className="text-lg font-bold text-[#001E2B] truncate mx-4">
-              {courseInfo.title}
+              {courseDetail?.course.title}
             </h1>
 
             {/* Mobile Menu Toggle */}
@@ -445,19 +463,19 @@ export default function CourseLessonsPage({ courseId }: {courseId: string}) {
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="w-4 h-4 text-[#889397]" />
                   <span className="text-[#5C6C75]">
-                    <span className="font-bold text-[#001E2B]">{Math.round(courseInfo.totalDuration / 60)}h</span> tổng thời lượng
+                    <span className="font-bold text-[#001E2B]">{courseDetail?.course.estimated_hours || 0}h</span> tổng thời lượng
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <BookOpen className="w-4 h-4 text-[#889397]" />
                   <span className="text-[#5C6C75]">
-                    <span className="font-bold text-[#001E2B]">{courseInfo.totalLessons}</span> bài học
+                    <span className="font-bold text-[#001E2B]">{courseDetail?.progress_stats?.total_lessons || 0}</span> bài học
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Users className="w-4 h-4 text-[#889397]" />
                   <span className="text-[#5C6C75]">
-                    <span className="font-bold text-[#001E2B]">{courseInfo.enrolledStudents}</span> học viên
+                    <span className="font-bold text-[#001E2B]">{courseDetail?.course.enrolled_count || 0}</span> học viên
                   </span>
                 </div>
               </div>
