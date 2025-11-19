@@ -24,7 +24,7 @@ export function HeroSection() {
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
       {/* Gradient Background */}
-      <div className="absolute inset-0" />
+      <div className="absolute inset-0  bg-white" />
       
       {/* Animated overlay */}
       <div className="absolute inset-0 opacity-60">
@@ -39,10 +39,10 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+        <div className="grid lg:grid-cols-5 gap-12 items-center">
           {/* Left Content */}
-          <div className="space-y-6 animate-slide-in-left">
+          <div className="space-y-6 animate-slide-in-left lg:col-span-3">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black  leading-tight">
               {titleText}
               <span className="animate-pulse">|</span>
@@ -95,9 +95,9 @@ export function HeroSection() {
           </div>
 
           {/* Right Image */}
-          <div className="relative animate-slide-in-right">
+          <div className="relative animate-slide-in-right ml-12 lg:col-span-2">
             <div className="floating">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-mongodb-green-500/25">
+              <div className="relative rounded-3xl overflow-hidden ">
                 {/* <img
                   src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
                   alt="Nhóm học tập"
