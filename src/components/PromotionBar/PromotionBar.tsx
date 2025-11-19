@@ -4,12 +4,12 @@ export default function PromotionBar() {
 
       <div className="flex items-center gap-2">
         <div className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-semibold">
-          NEW
+          HOT
         </div>
-        <span>Zenlish Plus: New experience w/ AI learning. Check it out ›</span>
+        <span>Đăng ký khóa học ngay để nhận ưu đãi hấp dẫn ›</span>
       </div>
       <button className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs font-semibold">
-        LEARN MORE
+        Tìm hiểu
       </button>
     </div>
   );
