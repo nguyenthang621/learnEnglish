@@ -88,7 +88,7 @@ const RiveInteractive = forwardRef<RiveInteractiveHandle, RiveInteractiveProps>(
       }),
       // Provide a placeholder canvas to satisfy the RiveParameters type;
       // the actual canvas is managed by the returned RiveComponent.
-      canvas: (null as unknown) as HTMLCanvasElement,
+      // canvas: (null as unknown) as HTMLCanvasElement,
     };
 
     const { rive, RiveComponent } = useRive(riveParams);

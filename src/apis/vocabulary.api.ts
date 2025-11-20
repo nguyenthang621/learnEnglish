@@ -1,6 +1,7 @@
 import { VocabularyListQuery, WordData } from "@/types/vocabulary.type";
 import http from "@/utils/http";
 import { SearchPayload } from "@/types/utils.type";
+import { desc } from "framer-motion/client";
 
 const vocabularyAPI = {
   searchVocabulary: function (text: string, from: string, to: string) {
@@ -27,8 +28,20 @@ const vocabularyAPI = {
   getBookmarkCollections: function () {
     return http.get<any>(`/auth/bookmark-collections`);
   },
+  deleteBookmarkCollections: function (id: number) {
+    return http.delete<any>(`/auth/bookmark-collections/${id}`);
+  },
+  ceateBookmarkCollections: function ({name, description, is_default}: {name: string, description: string, is_default: boolean}) {
+    return http.post<any>(`/auth/bookmark-collections`,{ name: name , description: description, is_default: is_default});
+  },
+  updateBookmarkCollections: function ({name, description, is_default, collection_id}: {name: string, description: string, is_default: boolean, collection_id: number}) {
+    return http.post<any>(`/auth/bookmark-collections/${collection_id}`,{ name: name , description: description, is_default: is_default});
+  },
   getDeatilBookmarkCollections: function (id: number) {
     return http.get<any>(`/auth/bookmark-collections/${id}`);
+  },
+  deleteVocabularyCollections: function (id: number) {
+    return http.delete<any>(`/auth/bookmark-collections/${id}`);
   }
 };
 

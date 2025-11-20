@@ -18,6 +18,8 @@ import {
   Volume2
 } from 'lucide-react';
 import vocabularyAPI from '@/apis/vocabulary.api';
+import RiveWrapper from '@/components/Animation/RiveWrapper';
+
 
 interface VocabularyType {
   id: number;
@@ -58,7 +60,7 @@ interface Bookmark {
   bookmarkable: Vocabulary;
 }
 
-interface BookmarkCollection {
+interface BookmarkCollectionDetail {
   id: number;
   user_id: number;
   name: string;
@@ -69,7 +71,23 @@ interface BookmarkCollection {
   bookmarks?: Bookmark[];
 }
 
+interface BookmarkCollection {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+  bookmarks_count: number;
+}
+
+
+
+
+
 export default function MyBookmarks() {
+  const [collectionDetail, setCollectionDetail] = useState<BookmarkCollectionDetail[]>([]);
   const [collections, setCollections] = useState<BookmarkCollection[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,7 +98,7 @@ export default function MyBookmarks() {
   const [showMoveModal, setShowMoveModal] = useState(false);
   
   // Editing states
-  const [editingCollection, setEditingCollection] = useState<BookmarkCollection | null>(null);
+  const [editingCollection, setEditingCollection] = useState<BookmarkCollectionDetail | null>(null);
   const [movingBookmark, setMovingBookmark] = useState<Bookmark | null>(null);
   const [targetCollectionId, setTargetCollectionId] = useState<number | null>(null);
   const [editingNote, setEditingNote] = useState<{ bookmarkId: number; note: string } | null>(null);
@@ -97,7 +115,7 @@ export default function MyBookmarks() {
     try {
       setLoading(true);
       const response = await vocabularyAPI.getBookmarkCollections();
-      if (response.data && response.data.data) {    
+      if (response.data && response.status === 200) {    
         setCollections(response.data.data);
       }
       setLoading(false);
@@ -118,38 +136,45 @@ export default function MyBookmarks() {
   }, [selectedCollection]);
 
 
-    const loadCollectionDetail = async (collectionId: number) => {
+  const loadCollectionDetail = async (collectionId: number) => {
     try {
-        const response = await vocabularyAPI.getDeatilBookmarkCollections(collectionId);
-        if (response.status !== 200) return;
+      const response = await vocabularyAPI.getDeatilBookmarkCollections(collectionId);
+      if (response.status !== 200) return;
 
-        const { bookmarks } = response.data; // Destructure để lấy bookmarks
+      const { bookmarks } = response.data;
+      console.log("bookmarks: ", bookmarks);
+      
+      // Sửa logic: Kiểm tra xem collection đã tồn tại chưa
+      setCollectionDetail(prev => {
+        const existingIndex = prev.findIndex(col => col.id === collectionId);
         
-        setCollections(prev => prev.map(col => 
-        col.id === collectionId 
-            ? { ...col, bookmarks } // Spread operator để giữ nguyên properties khác
-            : col
-        ));
+        if (existingIndex !== -1) {
+          // Nếu đã tồn tại, cập nhật
+          const newArray = [...prev];
+          newArray[existingIndex] = { ...newArray[existingIndex], bookmarks };
+          return newArray;
+        } else {
+          // Nếu chưa tồn tại, thêm mới
+          const collectionInfo = collections.find(c => c.id === collectionId);
+          if (collectionInfo) {
+            return [...prev, { ...collectionInfo, bookmarks }];
+          }
+          return prev;
+        }
+      });
     } catch (error) {
-        console.error('Error loading collection detail:', error);
+      console.error('Error loading collection detail:', error);
     }
-    };
+  };
 
   const handleCreateCollection = async () => {
     if (!collectionForm.name.trim()) return;
 
     try {
       setLoading(true);
-      const response = await fetch('/api/auth/bookmark-collections', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(collectionForm)
-      });
+      const response = await vocabularyAPI.ceateBookmarkCollections(collectionForm);
 
-      if (response.ok) {
+      if (response.data) {
         await fetchCollections();
         setCollectionForm({ name: '', description: '', is_default: false });
         setShowCollectionModal(false);
@@ -166,16 +191,10 @@ export default function MyBookmarks() {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/auth/bookmark-collections/${editingCollection.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(collectionForm)
-      });
+      const payload = {...collectionForm, collection_id: editingCollection.id};
+      const response = await vocabularyAPI.updateBookmarkCollections(payload)
 
-      if (response.ok) {
+      if (response.data && response.status === 200) {
         await fetchCollections();
         setCollectionForm({ name: '', description: '', is_default: false });
         setEditingCollection(null);
@@ -189,20 +208,15 @@ export default function MyBookmarks() {
   };
 
   const handleDeleteCollection = async (collectionId: number) => {
-    if (!confirm('Bạn có chắc muốn xóa bộ sưu tập này? Tất cả từ vựng sẽ bị xóa khỏi bookmark.')) {
+    if (!collectionId) {
       return;
     }
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/auth/bookmark-collections/${collectionId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        }
-      });
+      const response = await vocabularyAPI.deleteBookmarkCollections(collectionId);
 
-      if (response.ok) {
+      if (response.data && response.status === 200) {
         await fetchCollections();
         if (selectedCollection === collectionId) {
           setSelectedCollection(null);
@@ -233,7 +247,7 @@ export default function MyBookmarks() {
       });
 
       if (response.ok) {
-        // Reload both collections
+        // Reload both collectionDetail
         await loadCollectionDetail(selectedCollection);
         await loadCollectionDetail(targetCollectionId);
         await fetchCollections(); // Update counts
@@ -250,20 +264,15 @@ export default function MyBookmarks() {
   };
 
   const handleRemoveFromBookmark = async (bookmarkId: number) => {
-    if (!confirm('Bạn có chắc muốn xóa từ này khỏi bookmark?')) return;
-
+    if (!bookmarkId || !selectedCollection) return;
     try {
       setLoading(true);
-      const response = await fetch(`/api/auth/bookmarks/${bookmarkId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        }
-      });
+      const response = await vocabularyAPI.deleteVocabularyCollections(bookmarkId);
 
-      if (response.ok && selectedCollection) {
+      if (response.data && response.status) {
         await loadCollectionDetail(selectedCollection);
         await fetchCollections(); // Update counts
+        setSelectedVocabularyId(null);
       }
     } catch (error) {
       console.error('Error removing from bookmark:', error);
@@ -273,6 +282,7 @@ export default function MyBookmarks() {
   };
 
   const handleUpdateNote = async (bookmarkId: number, note: string) => {
+    console.log("nodte: ", note);
     try {
       setLoading(true);
       const response = await fetch(`/api/auth/bookmarks/${bookmarkId}`, {
@@ -295,7 +305,36 @@ export default function MyBookmarks() {
     }
   };
 
-  const selectedCollectionData = collections.find(c => c.id === selectedCollection);
+  const selectedCollectionData = collectionDetail.find(c => c.id === selectedCollection);
+  
+  const handleClickBookmark = async (collection: BookmarkCollection) => {
+    try {
+      setLoading(true);
+      const payload = {name: collection.name, description: collection.description || "", is_default: true, collection_id: collection.id};
+      const response = await vocabularyAPI.updateBookmarkCollections(payload)
+
+      if (response.data && response.status === 200) {
+        await fetchCollections();
+        setCollectionForm({ name: '', description: '', is_default: false });
+        setEditingCollection(null);
+        setShowCollectionModal(false);
+      }
+    } catch (error) {
+      console.error('Error updating collection:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const [selectedVocabularyId, setSelectedVocabularyId] = useState<number | null>(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number | null>(null);
+
+  const handleClickDeleteCollection = (e: any, collectionId: number) => { 
+    e.stopPropagation();
+    setSelectedCollectionId(collectionId);  
+  }
+
+  
   const bookmarks = selectedCollectionData?.bookmarks || [];
   const filteredBookmarks = bookmarks.filter(bookmark => {
     const vocab = bookmark.bookmarkable;
@@ -309,8 +348,59 @@ export default function MyBookmarks() {
     normal: 'border-gray-300 bg-white'
   };
 
+  console.log("selectedCollectionId: ", selectedCollectionId);
+
   return (
     <div className="h-[90vh] flex max-w-7xl mx-auto m-6 border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      {/* model confirm delete vocabulary*/}
+      {selectedVocabularyId && <div id="info-popup" className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full bg-slate-900/50">
+        <div className="relative p-4 w-full max-w-lg h-full md:h-auto top-1/2 transform -translate-y-1/2 mx-auto">
+            <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 md:p-8">
+                <div className="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bạn có muốn xóa từ vựng này?</h3>
+                    <p>
+                      Xóa vĩnh viễn từ
+                    <span className='text-red-600'> 
+                       {` ${collectionDetail.find(col => col.bookmarks?.some(bm => bm.id === selectedVocabularyId))?.bookmarks?.find(bm => bm.id === selectedVocabularyId)?.bookmarkable.word} `}
+                    </span>
+                      khỏi bộ sưu tập của bạn.
+                    </p>
+                </div>
+                <div className="justify-between items-center pt-0 space-y-4 sm:flex sm:space-y-0">
+                    <div className="items-center space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
+                        <button id="close-modal" type="button" onClick={()=> setSelectedVocabularyId(null)}  className="cursor-pointer py-2 px-4 w-full text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 sm:w-auto hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Không</button>
+                        <button id="confirm-button" type="button" onClick={()=> handleRemoveFromBookmark(selectedVocabularyId)} className="cursor-pointer bg-green-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>}
+
+      {/* model confirm delete collection*/}
+      {selectedCollectionId && <div id="info-popup" className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full bg-slate-900/50">
+        <div className="relative p-4 w-full max-w-lg h-full md:h-auto top-1/2 transform -translate-y-1/2 mx-auto">
+            <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 md:p-8">
+                <div className="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bạn có muốn bộ sưu tập từ vựng này?</h3>
+                    <p>
+                      Xóa vĩnh viễn bộ sưu tập
+                    <span className='text-red-600'> 
+                       {` ${collectionDetail.find(col => col.id === selectedCollectionId)?.name} `}
+                    </span>
+                      và tất cả từ vựng bên trong khỏi bộ sưu tập của bạn.
+                    </p>
+                </div>
+                <div className="justify-between items-center pt-0 space-y-4 sm:flex sm:space-y-0">
+                    <div className="items-center space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
+                        <button id="close-modal" type="button" onClick={()=> setSelectedCollectionId(null)}  className="cursor-pointer py-2 px-4 w-full text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 sm:w-auto hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Không</button>
+                        <button id="confirm-button" type="button" onClick={()=> handleDeleteCollection(selectedCollectionId)} className="cursor-pointer bg-green-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>}
+
+
       {/* Pane 1: Collections */}
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-200">
@@ -325,21 +415,28 @@ export default function MyBookmarks() {
               setCollectionForm({ name: '', description: '', is_default: false });
               setShowCollectionModal(true);
             }}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors btn-mogo"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 inline mr-2" />
             Tạo Bộ Sưu Tập
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {loading && collections.length === 0 ? (
+          {loading && collectionDetail.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               Đang tải...
             </div>
           ) : collections.length === 0 ? (
             <div className="text-center py-8">
-              <Bookmark className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              {/* <Bookmark className="w-12 h-12 text-gray-300 mx-auto mb-3" /> */}
+              <RiveWrapper
+              src="/icon-bookmark.riv"
+              stateMachine="State Machine 1"
+              autoplay
+              style={{ width: 500, height: 500, background: "transparent" }}
+              // clickTriggerName="Save"
+              />
               <p className="text-sm text-gray-500">Chưa có bộ sưu tập nào</p>
             </div>
           ) : (
@@ -358,12 +455,30 @@ export default function MyBookmarks() {
                 <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 mt-0.5">
                     {collection.is_default ? (
-                        <div className="w-5 h-5 rounded bg-green-600 flex items-center justify-center">
-                        <Star className="w-3 h-3 text-white fill-white" />
+                        <div className="w-5 h-5 rounded flex items-center justify-center">
+                        {/* <Star className="w-3 h-3 text-white fill-white" /> */}
+                          <RiveWrapper
+                          src="/icon-bookmark.riv"
+                          stateMachine="State Machine 1"
+                          autoplay
+                          style={{ width: 20, height: 20, background: "transparent" }}
+                          clickTriggerName="Save"
+                          inputs={{
+                            booleans: {             
+                              save: true,
+                            },
+                          }}
+                          />
                         </div>
                     ) : (
-                        <div className="w-5 h-5 rounded bg-gray-300 flex items-center justify-center">
-                        <Bookmark className="w-3 h-3 text-white" />
+                        <div className="w-5 h-5 rounded bg-gray-300 flex items-center justify-center" onClick={()=> handleClickBookmark(collection)}>
+                          <RiveWrapper
+                          src="/icon-bookmark.riv"
+                          // stateMachine="State Machine 1"
+                          autoplay
+                          style={{ width: 20, height: 20, background: "transparent" }}
+                          // clickTriggerName="Save"
+                          />
                         </div>
                     )}
                     </div>
@@ -388,7 +503,7 @@ export default function MyBookmarks() {
                     
                     <div className="flex items-center text-xs text-gray-500 font-medium">
                         <BookOpen className="w-3.5 h-3.5 mr-1.5" />
-                        {collection.bookmarks?.length || 0} {collection.bookmarks?.length === 1 ? 'word' : 'words'}
+                        {collection.bookmarks_count + ' từ vựng' }
                     </div>
                     </div>
                     
@@ -411,10 +526,7 @@ export default function MyBookmarks() {
                     </button>
                     {!collection.is_default && (
                         <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteCollection(collection.id);
-                        }}
+                        onClick={(e) => handleClickDeleteCollection(e, collection.id)}
                         className="p-1.5 rounded hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors"
                         title="Delete"
                         >
@@ -506,7 +618,7 @@ export default function MyBookmarks() {
                                     const audio = new Audio(vocab.audio_url!);
                                     audio.play();
                                     }}
-                                    className="ml-2 p-1.5 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                                    className="ml-2 p-1.5 pt-4 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex items-center justify-center"
                                     title="Phát âm"
                                 >
                                     <Volume2 className="w-4 h-4" />
@@ -556,7 +668,7 @@ export default function MyBookmarks() {
                                 <FolderInput className="w-4 h-4" />
                             </button>
                             <button
-                                onClick={() => handleRemoveFromBookmark(bookmark.id)}
+                                onClick={() => setSelectedVocabularyId(bookmark.id)}
                                 className="p-2 rounded hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors"
                                 title="Xóa"
                             >
@@ -833,7 +945,7 @@ export default function MyBookmarks() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">-- Chọn bộ sưu tập --</option>
-                  {collections
+                  {collectionDetail
                     .filter(c => c.id !== selectedCollection)
                     .map(collection => (
                       <option key={collection.id} value={collection.id}>
