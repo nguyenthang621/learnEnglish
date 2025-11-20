@@ -347,70 +347,82 @@ export default function MyBookmarks() {
               const isSelected = selectedCollection === collection.id;
               return (
                 <div
-                  key={collection.id}
-                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all group ${
+                key={collection.id}
+                className={`p-4 rounded border cursor-pointer transition-all group ${
                     isSelected 
-                      ? collection.is_default
-                        ? 'border-blue-500 bg-blue-50 shadow-md'
-                        : 'border-indigo-500 bg-indigo-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300 bg-white'
-                  }`}
-                  onClick={() => setSelectedCollection(collection.id)}
+                    ? 'border-gray-900 bg-gray-50 shadow-sm'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+                onClick={() => setSelectedCollection(collection.id)}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {collection.is_default ? (
-                        <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                      ) : (
-                        <Bookmark className="w-5 h-5 text-indigo-500" />
-                      )}
+                <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-0.5">
+                    {collection.is_default ? (
+                        <div className="w-5 h-5 rounded bg-green-600 flex items-center justify-center">
+                        <Star className="w-3 h-3 text-white fill-white" />
+                        </div>
+                    ) : (
+                        <div className="w-5 h-5 rounded bg-gray-300 flex items-center justify-center">
+                        <Bookmark className="w-3 h-3 text-white" />
+                        </div>
+                    )}
                     </div>
+                    
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-sm truncate">{collection.name}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium text-sm text-gray-900 truncate">
+                        {collection.name}
+                        </h3>
                         {collection.is_default && (
-                          <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">
-                            Mặc định
-                          </span>
+                        <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded font-medium">
+                            Default
+                        </span>
                         )}
-                      </div>
-                      {collection.description && (
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">{collection.description}</p>
-                      )}
-                      <div className="flex items-center text-xs text-gray-500">
-                        <BookOpen className="w-3 h-3 mr-1" />
-                        {collection.bookmarks?.length || 0} từ vựng
-                      </div>
                     </div>
+                    
+                    {collection.description && (
+                        <p className="text-xs text-gray-600 mb-2 line-clamp-2 leading-relaxed">
+                        {collection.description}
+                        </p>
+                    )}
+                    
+                    <div className="flex items-center text-xs text-gray-500 font-medium">
+                        <BookOpen className="w-3.5 h-3.5 mr-1.5" />
+                        {collection.bookmarks?.length || 0} {collection.bookmarks?.length === 1 ? 'word' : 'words'}
+                    </div>
+                    </div>
+                    
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
+                    <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCollection(collection);
-                          setCollectionForm({
+                        e.stopPropagation();
+                        setEditingCollection(collection);
+                        setCollectionForm({
                             name: collection.name,
                             description: collection.description || '',
                             is_default: collection.is_default
-                          });
-                          setShowCollectionModal(true);
+                        });
+                        setShowCollectionModal(true);
                         }}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      {!collection.is_default && (
+                        className="p-1.5 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                        title="Edit"
+                    >
+                        <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    {!collection.is_default && (
                         <button
-                          onClick={(e) => {
+                        onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteCollection(collection.id);
-                          }}
-                          className="text-red-600 hover:text-red-800"
+                        }}
+                        className="p-1.5 rounded hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors"
+                        title="Delete"
                         >
-                          <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                      )}
+                    )}
                     </div>
-                  </div>
+                </div>
                 </div>
               );
             })
