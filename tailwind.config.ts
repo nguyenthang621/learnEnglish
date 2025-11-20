@@ -21,6 +21,7 @@ const config: Config = {
             200: '#a3d9a5',
             300: '#7bc47f',
             400: '#5ab55e',
+            450: '#E3FCF7',
             500: '#00684A', // Primary MongoDB Green
             600: '#005a3f',
             700: '#004d34',
@@ -45,7 +46,13 @@ const config: Config = {
           blue: '#00A4EF', // Accent Blue
           purple: '#E91E63', // Accent Purple/Pink
           orange: '#FF6F00', // Accent Orange
+          bghong: "#F9EBFF"
         },
+      fontFamily: {
+        heading: ['MongoDBValueSerif', 'serif'],
+        body:   ['EuclidCircularA', 'sans-serif'],
+        code:   ['Source Code Pro', 'monospace'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

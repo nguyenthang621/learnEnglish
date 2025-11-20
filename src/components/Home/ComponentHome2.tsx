@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, Rocket, Plus } from 'lucide-react';
+import { CheckCircle, Rocket, Plus, Globe, Code, Calculator, Briefcase, ArrowRight } from 'lucide-react';
 import RiveWrapper from '@/components/Animation/RiveWrapper';
 
 
@@ -249,12 +249,21 @@ export function FeaturesSection() {
   }, []);
 
   return (
-    <section id="features" className="py-20 lg:py-32 bg-gradient-to-b from-white to-mongodb-blue/10">
+    <section 
+        style={{
+            backgroundImage: "url('/backgroud2.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+        }}
+        id="features" 
+        className="py-12 lg:py-32 bg-white"
+    >
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-black mb-4 relative inline-block">
-            <span className="bg-gradient-to-r from-mongodb-green-500 via-mongodb-green-600 to-mongodb-yellow bg-clip-text ">
+            <span className="">
               Hệ Thống Học Tập Toàn Diện
             </span>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-mongodb-green-500 to-transparent rounded-full" />
@@ -265,119 +274,128 @@ export function FeaturesSection() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => {
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto place-items-stretch">
+        {features.map((feature, index) => {
             const Icon = feature.icon;
             const isVisible = visibleCards.includes(index);
 
             return (
-              <div
+            <div
                 key={index}
                 ref={(el) => { cardsRef.current[index] = el; }}
                 data-index={index}
-                className={`group relative bg-white rounded-3xl p-8 border-2 border-transparent hover:border-mongodb-green-300 transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:shadow-mongodb-green-500/15 ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-              >
-                {/* Background gradient on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl`} />
+                className={`
+                group relative rounded-3xl p-8 overflow-hidden
+                bg-white/90 backdrop-blur-sm
+                border border-slate-200/60
+                shadow-lg shadow-slate-200/30
+                transition-all duration-300
+                hover:-translate-y-3 hover:shadow-2xl
+                hover:bg-white card-mogo
+                ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                `}
+                style={{ transitionDelay: `${index * 120}ms` }}
+            >
 
-                <div className="relative z-10">
-                  {/* Icon */}
-                  <div className={`w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-br ${feature.gradient} text-white shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500`}>
-                    <Icon className="w-10 h-10" />
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-xl font-bold text-mongodb-black mb-3 text-center group-hover:text-mongodb-green-600 transition-colors">
-                    {feature.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-mongodb-slate-600 text-center mb-6 leading-relaxed">
-                    {feature.description}
-                  </p>
-
-                  {/* Feature List */}
-                  <ul className="space-y-3">
-                    {feature.items.map((item, i) => (
-                      <li key={i} className="flex items-center gap-2 text-mongodb-slate-700">
-                        <CheckCircle className="w-5 h-5 text-mongodb-green-600 flex-shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Decorative glow */}
-                  <div className={`absolute -bottom-2 -right-2 w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-full opacity-0 group-hover:opacity-10 blur-2xl transition-opacity duration-500`} />
+                {/* Border Gradient Glow */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.gradient} opacity-20 blur-xl`} />
                 </div>
-              </div>
+
+                {/* Card Content */}
+                <div className="relative z-10">
+
+                {/* Icon */}
+                <div className={`
+                    w-20 h-20 mx-auto mb-6 flex items-center justify-center
+                    rounded-2xl text-white shadow-lg
+                    bg-gradient-to-br ${feature.gradient}
+                    transition-all duration-500
+                    group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-slate-500/30 text-green-700
+                `}>
+                    <Icon className="w-10 h-10 text-slate-900" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold text-slate-800 mb-3 text-center transition-colors">
+                    {feature.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-slate-600 text-center mb-6 leading-relaxed">
+                    {feature.description}
+                </p>
+
+                {/* Feature List */}
+                <ul className="space-y-3">
+                    {feature.items.map((item, i) => (
+                    <li 
+                        key={i} 
+                        className="flex items-center gap-2 text-slate-700"
+                    >
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <span>{item}</span>
+                    </li>
+                    ))}
+                </ul>
+
+                </div>
+            </div>
             );
-          })}
+        })}
         </div>
+
       </div>
     </section>
   );
 }
 
-
-import { Star, Crown, Calendar, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 const categories = [
-  { id: 'thpt', label: 'Luyện thi THPT', icon: '🎓' },
-  { id: 'ielts', label: 'IELTS - TOEIC', icon: '🗣️' },
-  { id: 'code', label: 'Lập trình', icon: '💻' },
-  { id: 'skill', label: 'Kỹ năng nghề', icon: '📊' },
-  { id: 'language', label: 'Ngoại ngữ', icon: '🌍' }
+  { id: 'thpt', label: 'Luyện thi THPT', icon: <GraduationCap className="w-5 h-5" /> },
+  { id: 'ielts', label: 'IELTS - TOEIC', icon: <Globe className="w-5 h-5" /> },
+  { id: 'web', label: 'Lập trình Web/App', icon: <Code className="w-5 h-5" /> },
+  { id: 'math', label: 'Toán - Lý - Hóa', icon: <Calculator className="w-5 h-5" /> },
+  { id: 'skills', label: 'Kỹ năng nghề', icon: <Briefcase className="w-5 h-5" /> },
 ];
 
 const studyGroups = [
   {
     id: 1,
     category: 'thpt',
-    title: 'Toán 12 - Chuyên đề THPT QG 2025',
-    goal: 'Mục tiêu: Điểm 9+ môn Toán',
-    members: 2847,
+    title: 'Nhóm Luyện Thi THPT 2025',
+    goal: 'Mục tiêu: 8+ điểm mỗi môn',
+    members: 45,
+    schedule: 'Lịch học: 20h - T2-T4-T6',
+    leader: { name: 'Mentor Thảo', title: 'Cựu sinh viên ĐH Sư Phạm', avatar: 'MT' },
     vip: true,
-    schedule: 'Thứ 2, 4, 6 - 20:00',
-    leader: { name: 'Thầy Minh Tuấn', title: 'Giáo viên Toán', avatar: 'MT' },
-    color: 'from-mongodb-green-500 to-mongodb-green-600'
+    color: 'from-blue-400 to-blue-500'
   },
   {
     id: 2,
-    category: 'ielts',
-    title: 'IELTS 7.5+ Speaking & Writing',
-    goal: 'Lộ trình 3 tháng đạt 7.5 Overall',
-    members: 1923,
-    vip: true,
-    schedule: 'Thứ 3, 5, 7 - 19:30',
-    leader: { name: 'Ms. Linda', title: 'IELTS 8.5', avatar: 'LN' },
-    color: 'from-mongodb-blue to-mongodb-green-500'
+    category: 'thpt',
+    title: 'IELTS Speaking Club',
+    goal: 'Mục tiêu: IELTS 6.5 sau 60 ngày',
+    members: 32,
+    schedule: 'Lịch học: 19h - T3-T5-CN',
+    leader: { name: 'Ban An Nguyễn', title: 'IELTS 8.0, ĐH Ngoại Thương', avatar: 'AN' },
+    vip: false,
+    color: 'from-blue-400 to-blue-500'
   },
   {
     id: 3,
-    category: 'code',
-    title: 'Web Development 2025 - Full Stack',
-    goal: 'Xây dựng dự án thực tế từ A-Z',
-    members: 3156,
-    vip: false,
-    schedule: 'Thứ 2, 4, 6 - 21:00',
-    leader: { name: 'Anh Khoa', title: 'Senior Dev', avatar: 'KH' },
-    color: 'from-mongodb-purple to-mongodb-blue'
+    category: 'thpt',
+    title: 'Web Developer Squad',
+    goal: 'Xây dựng 5 dự án thực tế',
+    members: 28,
+    schedule: 'Lịch học: 21h - T2-T6',
+    leader: { name: 'Tech Leader Dũng', title: 'Senior Developer tại FPT', avatar: 'TD' },
+    vip: true,
+    color: 'from-blue-400 to-blue-500'
   },
-  {
-    id: 4,
-    category: 'skill',
-    title: 'Digital Marketing Thực Chiến',
-    goal: 'Case study thực tế & Tạo portfolio',
-    members: 1654,
-    vip: false,
-    schedule: 'Thứ 3, 5 - 20:00',
-    leader: { name: 'Chị Lan', title: 'Marketing Manager', avatar: 'LA' },
-    color: 'from-mongodb-yellow to-mongodb-orange'
-  }
 ];
+
 
 export function StudyGroupsSection() {
   const [activeCategory, setActiveCategory] = useState('thpt');
@@ -385,102 +403,95 @@ export function StudyGroupsSection() {
   const filteredGroups = studyGroups.filter(group => group.category === activeCategory);
 
   return (
-    <section id="study-groups" className="py-20 lg:py-32 bg-gradient-to-b from-mongodb-blue/10 to-white">
-      <div className="container mx-auto px-4">
+    <section id="study-groups" className="py-20 lg:py-16 bg-white">
+      <div className="container max-w-7xl mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 relative inline-block">
-            <span className="bg-gradient-to-r from-mongodb-green-500 via-mongodb-green-600 to-mongodb-yellow bg-clip-text ">
-              Kết Nối Để Học Cùng Nhau
-            </span>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-mongodb-green-500 to-transparent rounded-full" />
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
+            Kết Nối Để Học Cùng Nhau
           </h2>
-          <p className="text-lg text-mongodb-slate-600 max-w-2xl mx-auto mt-6">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mt-4">
             Chọn mục tiêu, chọn nhóm, bắt đầu ngay! Gợi ý nhóm phù hợp với bạn bằng AI
           </p>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`relative px-6 py-3 rounded-2xl font-bold transition-all duration-400 flex items-center gap-2 overflow-hidden ${
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 border ${
                 activeCategory === cat.id
-                  ? 'text-mongodb-green-600 border-2 border-mongodb-green-500 shadow-lg shadow-mongodb-green-500/20 -translate-y-1'
-                  : 'text-mongodb-slate-700 border-2 border-mongodb-slate-200 hover:border-mongodb-green-300'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                  : 'bg-white text-gray-700 border-gray-300 hover:border-slate-900 hover:bg-gray-50'
               }`}
             >
-              <span className={`absolute inset-0 bg-gradient-to-br from-mongodb-green-50 to-mongodb-green-100/50 transition-all duration-400 ${
-                activeCategory === cat.id ? 'translate-x-0' : '-translate-x-full'
-              }`} />
-              <span className="relative text-xl">{cat.icon}</span>
-              <span className="relative">{cat.label}</span>
+              {cat.icon}
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
 
         {/* Groups Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {filteredGroups.map((group, index) => (
             <div
               key={group.id}
-              className="group relative bg-white rounded-3xl overflow-hidden border-2 border-mongodb-slate-200 hover:border-mongodb-green-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-mongodb-green-500/15"
-              style={{ animation: `fadeInUp 0.5s ease ${index * 0.1}s backwards` }}
+              className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
             >
-              {/* Header with gradient */}
-              <div className={`relative p-8 bg-gradient-to-br ${group.color} overflow-hidden`}>
-                {/* Animated overlay */}
-                <div className="absolute inset-0 opacity-40">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl animate-pulse" />
-                </div>
-
+              {/* Header */}
+              <div className={`relative p-6 bg-slate-900 ${group.color}`}>
                 {/* Meta info */}
-                <div className="relative flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2 text-white font-semibold">
-                    <Users className="w-5 h-5" />
-                    {group.members.toLocaleString()} thành viên
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-2 text-white text-sm font-medium">
+                    <Users className="w-4 h-4" />
+                    {group.members} thành viên
                   </div>
                   {group.vip && (
-                    <div className="flex items-center gap-1 px-3 py-1.5 bg-mongodb-yellow text-mongodb-black rounded-full text-sm font-bold shadow-lg animate-pulse">
-                      <Crown className="w-4 h-4" />
+                    <div className="px-3 py-1 bg-green-200 text-slate-800 rounded-full text-xs font-bold">
                       VIP
+                    </div>
+                  )}
+                  {!group.vip && (
+                    <div className="px-3 py-1 bg-green-200 text-slate-800 rounded-full text-xs font-bold">
+                      MIỄN PHÍ
                     </div>
                   )}
                 </div>
 
                 {/* Title */}
-                <h3 className="relative text-2xl font-bold text-white mb-2">
+                <h3 className="text-xl font-bold text-white mb-2">
                   {group.title}
                 </h3>
-                <p className="relative text-white/90 text-lg">
+                <p className="text-white/95 text-sm">
                   {group.goal}
                 </p>
               </div>
 
               {/* Body */}
-              <div className="p-8">
+              <div className="p-6">
                 {/* Schedule */}
-                <div className="flex items-center gap-2 mb-6 text-mongodb-slate-600 font-medium">
-                  <Calendar className="w-5 h-5 text-mongodb-green-600" />
+                <div className="flex items-center gap-2 mb-4 text-gray-600 text-sm">
+                  <Calendar className="w-4 h-4" />
                   {group.schedule}
                 </div>
 
                 {/* Leader */}
-                <div className="flex items-center gap-4 mb-6 p-4 bg-mongodb-green-50 rounded-2xl">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-mongodb-green-500 to-mongodb-blue flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                <div className="flex items-center gap-3 pb-6 border-b border-gray-200 pb-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-500 flex items-center justify-center text-white font-bold text-sm">
                     {group.leader.avatar}
                   </div>
                   <div>
-                    <h5 className="font-bold text-mongodb-black">{group.leader.name}</h5>
-                    <p className="text-sm text-mongodb-slate-600">{group.leader.title}</p>
+                    <h5 className="font-semibold text-gray-900 text-sm">{group.leader.name}</h5>
+                    <p className="text-xs text-gray-500">{group.leader.title}</p>
                   </div>
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full py-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-green-600 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-mongodb-green-500/30 transition-all duration-300 hover:-translate-y-1">
+                <button className="w-full py-3.5 text-slate-900 font-semibold rounded-xl hover:text-green-900 transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-lg">
                   Tham gia ngay
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
@@ -489,18 +500,11 @@ export function StudyGroupsSection() {
 
         {/* View All Button */}
         <div className="text-center">
-          <button className="px-10 py-4 font-bold text-mongodb-green-600 border-2 border-mongodb-green-500 rounded-xl hover:bg-mongodb-green-50 hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
+          <button className="px-8 py-3 font-medium text-slate-600 border-2 border-slate-600 rounded-lg hover:bg-slate-50 transition-all duration-200">
             Xem tất cả {studyGroups.length} nhóm học →
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </section>
   );
 }
@@ -508,60 +512,8 @@ export function StudyGroupsSection() {
 // =================
 
 
-import { Flame, Trophy, Mail, Phone, MapPin, ChevronRight, Facebook, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { Flame, Trophy, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Linkedin, ChevronRight } from 'lucide-react';
 
-// Progress Section
-export function ProgressSection() {
-  const stats = [
-    { icon: Flame, number: '7', label: 'Ngày học liên tiếp', color: 'from-mongodb-orange to-mongodb-yellow' },
-    { icon: Trophy, number: '15', label: 'Huy hiệu đạt được', color: 'from-mongodb-yellow to-mongodb-green-500' },
-    { icon: TrendingUp, number: '#3', label: 'Xếp hạng nhóm', color: 'from-mongodb-green-500 to-mongodb-blue' },
-    { icon: Star, number: '2,450', label: 'Điểm chăm học', color: 'from-mongodb-blue to-mongodb-purple' }
-  ];
-
-  return (
-    <section className="py-20 lg:py-32 bg-gradient-to-br from-mongodb-green-50 to-mongodb-green-100/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-yellow bg-clip-text ">
-            Mốc Tiến Độ & Thành Tích
-          </h2>
-          <p className="text-lg text-mongodb-slate-600">
-            Theo dõi tiến độ cá nhân và nhóm, thi đua cùng bạn bè
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="group relative bg-white rounded-3xl p-8 text-center border-2 border-mongodb-slate-200 hover:border-mongodb-green-400 transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:shadow-mongodb-green-500/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-mongodb-green-50 to-mongodb-green-100/50 opacity-0 group-hover:opacity-100 rounded-3xl transition-opacity duration-500" />
-                
-                <div className="relative z-10">
-                  <div className={`w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-br ${stat.color} text-white shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500`}>
-                    <Icon className="w-10 h-10" />
-                  </div>
-                  
-                  <div className={`text-5xl font-black mb-3 bg-gradient-to-r ${stat.color} bg-clip-text `}>
-                    {stat.number}
-                  </div>
-                  
-                  <div className="text-mongodb-slate-600 font-semibold">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // Testimonials Section
 export function TestimonialsSection() {
@@ -596,13 +548,13 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-b from-white to-mongodb-yellow/10">
-      <div className="container mx-auto px-4">
+    <section className="py-20 lg:py-32 bg-gray-50">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-yellow bg-clip-text ">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
             Câu Chuyện Thành Công
           </h2>
-          <p className="text-lg text-mongodb-slate-600">
+          <p className="text-lg text-gray-600">
             Hàng nghìn học viên đã thay đổi cuộc đời nhờ học nhóm
           </p>
         </div>
@@ -611,33 +563,33 @@ export function TestimonialsSection() {
           {testimonials.map((item, index) => (
             <div
               key={index}
-              className="group relative bg-white rounded-3xl p-8 border-2 border-mongodb-slate-200 hover:border-mongodb-green-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-mongodb-green-500/15"
+              className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all duration-300"
             >
-              <div className="absolute top-6 left-6 text-8xl text-mongodb-green-500/10 font-serif leading-none">"</div>
-              
-              <div className="relative z-10">
-                <p className="text-mongodb-slate-700 italic mb-6 leading-relaxed">
+              <div className="relative">
+                <div className="absolute -top-2 -left-2 text-6xl text-slate-100 font-serif leading-none">"</div>
+                
+                <p className="indent-6 text-gray-700 mb-6 leading-relaxed relative">
                   {item.text}
                 </p>
 
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-mongodb-green-500 to-mongodb-blue flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  <div className="w-12 h-12 rounded-full bg-slate-500 flex items-center justify-center text-white font-bold">
                     {item.avatar}
                   </div>
                   <div>
-                    <h5 className="font-bold text-mongodb-black">{item.author}</h5>
-                    <p className="text-sm text-mongodb-slate-600">{item.role}</p>
+                    <h5 className="font-semibold text-gray-900">{item.author}</h5>
+                    <p className="text-sm text-gray-600">{item.role}</p>
                   </div>
                 </div>
 
-                <div className="flex gap-4 justify-center">
-                  <div className="text-center px-4 py-3 bg-mongodb-green-50 rounded-xl flex-1">
-                    <div className="text-2xl font-black text-mongodb-slate-500">{item.before}</div>
-                    <div className="text-xs text-mongodb-slate-600 font-semibold">Trước</div>
+                <div className="flex gap-3">
+                  <div className="text-center px-4 py-3 bg-gray-100 rounded-lg flex-1">
+                    <div className="text-xl font-bold text-gray-600">{item.before}</div>
+                    <div className="text-xs text-gray-500 font-medium">Trước</div>
                   </div>
-                  <div className="text-center px-4 py-3 bg-mongodb-green-100 rounded-xl flex-1">
-                    <div className="text-2xl font-black text-mongodb-green-600">{item.after}</div>
-                    <div className="text-xs text-mongodb-slate-600 font-semibold">Sau</div>
+                  <div className="text-center px-4 py-3 bg-slate-50 rounded-lg flex-1">
+                    <div className="text-xl font-bold text-slate-600">{item.after}</div>
+                    <div className="text-xs text-gray-600 font-medium">Sau</div>
                   </div>
                 </div>
               </div>
@@ -652,26 +604,21 @@ export function TestimonialsSection() {
 // CTA Section
 export function CTASection() {
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-br from-mongodb-yellow/20 via-mongodb-yellow/30 to-mongodb-orange/20 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-60">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-mongodb-yellow/20 rounded-full blur-3xl animate-pulse" />
-      </div>
-
-      <div className="container mx-auto px-4 text-center relative z-10">
-        <h2 className="text-4xl lg:text-5xl font-black mb-6 bg-gradient-to-r from-mongodb-green-500 to-mongodb-yellow bg-clip-text ">
+    <section className="py-20 lg:py-32 bg-[#F9EBFF]">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-slate-900">
           Sẵn Sàng Bắt Đầu Hành Trình?
         </h2>
-        <p className="text-xl text-mongodb-slate-700 mb-10 max-w-2xl mx-auto font-medium">
+        <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
           Tham gia cộng đồng 250,000+ học viên đang học tập và tiến bộ mỗi ngày
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="group relative px-10 py-5 font-bold text-white bg-gradient-to-r from-mongodb-green-500 to-mongodb-green-600 rounded-xl shadow-2xl shadow-mongodb-green-500/30 hover:shadow-2xl hover:shadow-mongodb-green-500/50 hover:-translate-y-1 transition-all duration-400 text-lg overflow-hidden">
-            <span className="absolute inset-0 bg-white/30 rounded-full scale-0 group-hover:scale-[3] transition-transform duration-600" />
-            <span className="relative">Tham gia miễn phí ngay</span>
+          <button className="px-10 py-4 btn-mogo">
+            Tham gia miễn phí ngay
           </button>
 
-          <button className="px-10 py-5 font-bold text-mongodb-green-600 border-2 border-mongodb-green-500 bg-white rounded-xl hover:bg-mongodb-green-50 hover:-translate-y-1 transition-all duration-300 text-lg shadow-lg">
+          <button className="px-10 py-4 btn-mogo">
             Xem demo hệ thống
           </button>
         </div>
@@ -683,38 +630,38 @@ export function CTASection() {
 // Contact Section
 export function ContactSection() {
   return (
-    <section id="contact" className="py-20 lg:py-32 bg-gradient-to-b from-white to-mongodb-green-50">
-      <div className="container mx-auto px-4">
+    <section id="contact" className="bg-[#F9EBFF]">
+      <div className="container mx-auto px-4 border-t border-gray-800 py-20 lg:py-32 ">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-yellow bg-clip-text ">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
             Liên Hệ Với Chúng Tôi
           </h2>
-          <p className="text-lg text-mongodb-slate-600">
+          <p className="text-lg text-gray-600">
             Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc của bạn
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Contact Form */}
-          <div className="bg-white rounded-3xl p-8 border-2 border-mongodb-slate-200 shadow-xl">
-            <h3 className="text-2xl font-bold mb-6 text-mongodb-black">Gửi tin nhắn</h3>
+          <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm card-mogo">
+            <h3 className="text-2xl font-bold mb-6 text-gray-900">Gửi tin nhắn</h3>
             <form className="space-y-4">
               <input
                 type="text"
                 placeholder="Họ và tên"
-                className="w-full px-4 py-3 border-2 border-mongodb-slate-200 rounded-xl focus:border-mongodb-green-500 focus:outline-none focus:ring-4 focus:ring-mongodb-green-500/10 transition-all bg-mongodb-slate-50"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all"
               />
               <input
                 type="email"
                 placeholder="Email"
-                className="w-full px-4 py-3 border-2 border-mongodb-slate-200 rounded-xl focus:border-mongodb-green-500 focus:outline-none focus:ring-4 focus:ring-mongodb-green-500/10 transition-all bg-mongodb-slate-50"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all"
               />
               <textarea
                 rows={5}
                 placeholder="Nội dung tin nhắn"
-                className="w-full px-4 py-3 border-2 border-mongodb-slate-200 rounded-xl focus:border-mongodb-green-500 focus:outline-none focus:ring-4 focus:ring-mongodb-green-500/10 transition-all bg-mongodb-slate-50"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all"
               />
-              <button className="w-full py-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-green-600 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-mongodb-green-500/30 transition-all duration-300 hover:-translate-y-1">
+              <button className="w-full py-3 btn-mogo">
                 Gửi tin nhắn
               </button>
             </form>
@@ -722,8 +669,8 @@ export function ContactSection() {
 
           {/* Contact Info */}
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-mongodb-green-50 to-mongodb-green-100/50 rounded-3xl p-8">
-              <h3 className="text-2xl font-bold mb-6 text-mongodb-black">Thông tin liên hệ</h3>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 card-mogo">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">Thông tin liên hệ</h3>
               
               {[
                 { icon: Mail, title: 'Email', content: 'contact@hoccungban.vn', href: 'mailto:contact@hoccungban.vn' },
@@ -734,19 +681,19 @@ export function ContactSection() {
                 return (
                   <div
                     key={index}
-                    className="flex items-start gap-4 p-4 bg-white rounded-2xl mb-4 hover:shadow-lg hover:-translate-x-2 transition-all duration-300"
+                    className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg mb-4 last:mb-0 hover:bg-gray-100 transition-colors"
                   >
-                    <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-mongodb-green-500 to-mongodb-green-600 rounded-xl text-white">
-                      <Icon className="w-7 h-7" />
+                    <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-slate-500 rounded-lg text-white">
+                      <Icon className="w-6 h-6" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-mongodb-black mb-1">{item.title}</h5>
+                      <h5 className="font-semibold text-gray-900 mb-1">{item.title}</h5>
                       {item.href ? (
-                        <a href={item.href} className="text-mongodb-slate-600 hover:text-mongodb-green-600">
+                        <a href={item.href} className="text-gray-600 hover:text-slate-600 text-sm">
                           {item.content}
                         </a>
                       ) : (
-                        <p className="text-mongodb-slate-600">{item.content}</p>
+                        <p className="text-gray-600 text-sm">{item.content}</p>
                       )}
                     </div>
                   </div>
@@ -765,7 +712,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-br from-mongodb-black to-mongodb-slate-900 text-white pt-20 pb-8">
+    <footer className="bg-slate-900 text-white pt-20 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
@@ -846,10 +793,9 @@ export function Footer() {
 
 
 
-
 // ------
 
-import { Brain, Route, X, Check, School, Building, Handshake, Lightbulb } from 'lucide-react';
+import { Brain, Route, Check, X, School, Building, Handshake, Lightbulb } from 'lucide-react';
 
 // AI Study Section
 export function AIStudySection() {
@@ -877,19 +823,22 @@ export function AIStudySection() {
   ];
 
   return (
-    <section id="ai-study" className="py-20 lg:py-32 bg-gradient-to-br from-mongodb-green-50 via-mongodb-green-100/30 to-mongodb-blue/10 relative overflow-hidden">
-      {/* Animated overlay */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-mongodb-green-400 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-mongodb-blue rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-blue bg-clip-text ">
+    <section 
+        id="ai-study" 
+        // className="bg-white"
+        // style={{
+        //     backgroundImage: "url('/background.svg')",
+        //     backgroundSize: "cover",
+        //     backgroundPosition: "center",
+        //     backgroundRepeat: "no-repeat"
+        // }}
+    >
+      <div className="container mx-auto px-4 max-w-7xl  py-20 lg:py-32" >
+        <div className="text-center mb-16 ">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
             Học Cùng AI - Trợ Lý Thông Minh 24/7
           </h2>
-          <p className="text-lg text-mongodb-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Công nghệ AI tiên tiến giúp bạn học nhanh hơn, hiệu quả hơn
           </p>
         </div>
@@ -900,40 +849,32 @@ export function AIStudySection() {
             return (
               <div
                 key={index}
-                className="group relative bg-white rounded-3xl p-10 border-2 border-transparent hover:border-mongodb-green-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-mongodb-green-500/20 overflow-hidden"
+                className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all duration-300"
               >
-                {/* Animated background */}
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-mongodb-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                {/* Sweep effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-mongodb-green-500/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-                <div className="relative z-10">
-                  {/* Icon */}
-                  <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center rounded-3xl bg-gradient-to-br from-mongodb-green-500 to-mongodb-green-600 text-white shadow-2xl shadow-mongodb-green-500/30 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
-                    <Icon className="w-12 h-12" />
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-2xl font-bold text-mongodb-black mb-4 text-center group-hover:text-mongodb-green-600 transition-colors">
-                    {feature.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-mongodb-slate-600 text-center mb-6 leading-relaxed">
-                    {feature.description}
-                  </p>
-
-                  {/* Items */}
-                  <ul className="space-y-3">
-                    {feature.items.map((item, i) => (
-                      <li key={i} className="flex items-center gap-3 text-mongodb-slate-700">
-                        <CheckCircle className="w-5 h-5 text-mongodb-green-600 flex-shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {/* Icon */}
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-xl bg-slate-500 text-white">
+                  <Icon className="w-8 h-8" />
                 </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                  {feature.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-600 text-center mb-6 leading-relaxed">
+                  {feature.description}
+                </p>
+
+                {/* Items */}
+                <ul className="space-y-3">
+                  {feature.items.map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-700">
+                      <CheckCircle className="w-5 h-5 text-slate-600 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             );
           })}
@@ -955,20 +896,20 @@ export function USPSection() {
   ];
 
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-br from-mongodb-yellow/10 via-mongodb-yellow/20 to-mongodb-orange/10">
+    <section className="py-20 lg:py-32 ">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-r from-mongodb-green-500 to-mongodb-yellow bg-clip-text ">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
             Tại Sao Chọn Hoccungban?
           </h2>
-          <p className="text-lg text-mongodb-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             So sánh với các nền tảng học tập khác trên thị trường
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-mongodb-slate-200">
+        <div className="max-w-5xl mx-auto bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200">
           {/* Header */}
-          <div className="grid grid-cols-3 gap-4 p-6 bg-gradient-to-r from-mongodb-green-500 to-mongodb-green-600 text-white font-bold text-lg">
+          <div className="grid grid-cols-3 gap-4 p-6 bg-slate-600 text-white font-semibold">
             <div>Tính Năng</div>
             <div className="text-center">Nền Tảng Khác</div>
             <div className="text-center">Hoccungban</div>
@@ -978,30 +919,30 @@ export function USPSection() {
           {comparisons.map((row, index) => (
             <div
               key={index}
-              className="grid grid-cols-3 gap-4 p-6 items-center border-b border-mongodb-slate-200 hover:bg-mongodb-green-50/50 transition-colors last:border-b-0"
+              className="grid grid-cols-3 gap-4 p-6 items-center border-b border-gray-200 hover:bg-gray-50 transition-colors last:border-b-0"
             >
               {/* Feature */}
-              <div className="font-bold text-mongodb-slate-700">{row.feature}</div>
+              <div className="font-semibold text-gray-900">{row.feature}</div>
 
               {/* Competitor */}
               <div className="text-center">
                 {typeof row.competitor === 'boolean' ? (
                   row.competitor ? (
-                    <Check className="w-6 h-6 text-mongodb-green-600 mx-auto" />
+                    <Check className="w-6 h-6 text-green-600 mx-auto" />
                   ) : (
                     <X className="w-6 h-6 text-red-500 mx-auto" />
                   )
                 ) : (
-                  <span className="text-mongodb-slate-600">{row.competitor}</span>
+                  <span className="text-gray-600 text-sm">{row.competitor}</span>
                 )}
               </div>
 
               {/* Us */}
               <div className="text-center">
                 {typeof row.us === 'boolean' ? (
-                  <Check className="w-6 h-6 text-mongodb-green-600 mx-auto" />
+                  <Check className="w-6 h-6 text-slate-600 mx-auto" />
                 ) : (
-                  <span className="font-bold text-mongodb-green-600">{row.us}</span>
+                  <span className="font-semibold text-slate-600 text-sm">{row.us}</span>
                 )}
               </div>
             </div>
@@ -1048,19 +989,22 @@ export function B2BSection() {
   ];
 
   return (
-    <section id="b2b" className="py-20 lg:py-32 bg-gradient-to-br from-mongodb-black via-mongodb-slate-900 to-mongodb-black relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-mongodb-green-500 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-mongodb-yellow rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
+    <section 
+        style={{
+            backgroundImage: "url('/background-shape.svg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+        }}
+        id="b2b" 
+        className="py-20 lg:py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+    >
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-white">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-white">
             Giải Pháp B2B - Dành Cho Tổ Chức
           </h2>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Nâng cao năng lực đào tạo cho trường học & doanh nghiệp
           </p>
         </div>
@@ -1073,61 +1017,45 @@ export function B2BSection() {
             return (
               <div
                 key={index}
-                className="group relative bg-white/10 backdrop-blur-xl rounded-3xl p-10 border-2 border-white/20 hover:border-white/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden"
+                className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 card-mogo"
               >
-                {/* Shine effect */}
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-                <div className="relative z-10">
-                  {/* Icon */}
-                  <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-3xl bg-gradient-to-br from-mongodb-yellow to-mongodb-orange text-white shadow-2xl shadow-mongodb-yellow/30 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
-                    <Icon className="w-10 h-10" />
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-2xl font-bold text-white mb-4 text-center">
-                    {solution.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-white/80 text-center mb-6 leading-relaxed">
-                    {solution.description}
-                  </p>
-
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8">
-                    {solution.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-white/90 border-b border-white/10 pb-3 last:border-b-0">
-                        <CheckCircle className="w-5 h-5 text-mongodb-yellow flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Button */}
-                  <button className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-mongodb-yellow to-mongodb-orange text-mongodb-black font-bold rounded-xl hover:shadow-xl hover:shadow-mongodb-yellow/30 transition-all duration-300 hover:-translate-y-1">
-                    <ButtonIcon className="w-5 h-5" />
-                    {solution.buttonText}
-                  </button>
+                {/* Icon */}
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-xl bg-slate-500 text-white">
+                  <Icon className="w-8 h-8" />
                 </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                  {solution.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-600 text-center mb-6 leading-relaxed">
+                  {solution.description}
+                </p>
+
+                {/* Features */}
+                <ul className="space-y-3 mb-8">
+                  {solution.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-700 pb-3 border-b border-gray-100 last:border-b-0">
+                      <CheckCircle className="w-5 h-5 text-slate-600 flex-shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Button */}
+                <button className="w-full flex items-center justify-center btn-mogo">
+                  <ButtonIcon className="w-5 h-5 inline-block" />
+                  <div className='inline-block ml-2'>
+                  {solution.buttonText}
+                  </div>
+                </button>
               </div>
             );
           })}
         </div>
 
-        {/* Revenue Note */}
-        <div className="max-w-3xl mx-auto bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-3xl p-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Lightbulb className="w-6 h-6 text-mongodb-yellow" />
-            <h4 className="text-xl font-bold text-mongodb-yellow">
-              Doanh Thu Lớn & Ổn Định
-            </h4>
-          </div>
-          <p className="text-white/90 text-lg leading-relaxed">
-            Mô hình B2B mang lại doanh thu lớn, ổn định và lâu dài với hợp đồng theo năm. 
-            Trường học và doanh nghiệp cam kết sử dụng dài hạn, tạo nguồn thu bền vững cho nền tảng.
-          </p>
-        </div>
       </div>
     </section>
   );

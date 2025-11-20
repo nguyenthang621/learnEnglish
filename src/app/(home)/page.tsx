@@ -13,7 +13,7 @@
 
 'use client';
 
-import { AIStudySection, B2BSection, ContactSection, CTASection, FeaturesSection, Footer, HeroSection, ProgressSection, StudyGroupsSection, TestimonialsSection, USPSection } from '@/components/Home/ComponentHome2';
+import { AIStudySection, B2BSection, ContactSection, CTASection, FeaturesSection, Footer, HeroSection, StudyGroupsSection, TestimonialsSection, USPSection } from '@/components/Home/ComponentHome2';
 import Navbar from '@/components/Navbar/Navbar';
 import React from 'react';
 
@@ -81,16 +81,24 @@ export default function HoccungbanLanding() {
       <StudyGroupsSection />
       
       {/* AI Study Section - Học cùng AI */}
+      <section 
+        style={{
+            backgroundImage: "url('/brand-shape-large.svg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+        }}
+      >
+
       <AIStudySection />
       
       {/* USP Section - So sánh với đối thủ */}
       <USPSection />
+      </section>
       
       {/* B2B Section - Giải pháp cho tổ chức */}
       <B2BSection />
       
-      {/* Progress Section - Tiến độ & thành tích */}
-      <ProgressSection />
       
       {/* Testimonials Section - Câu chuyện thành công */}
       <TestimonialsSection />

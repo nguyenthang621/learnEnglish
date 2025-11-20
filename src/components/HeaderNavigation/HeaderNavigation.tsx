@@ -3,41 +3,38 @@ import { path } from "@/constants/paths";
 import Popover from "../Popover/Popover";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { logout, setProfile } from "@/stores/reducers/sharedReducer";
-// import { LocalStorage } from "@/utils/localStorage";
-import { forwardRef, use, useEffect, useState } from "react";
-import { BadgeCent, Bell, Flame, Moon, Sun } from "lucide-react";
+import { forwardRef, useEffect, useState } from "react";
+import { BadgeCent, Bell, Flame, Moon, Sun, ChevronDown } from "lucide-react";
 import userapi from "@/apis/user.api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AnimatedNumber from "../AnimatedNumber";
 import RiveWrapper from '@/components/Animation/RiveWrapper';
 
-
-
 interface HeaderNavigationProps {
   title?: string;
 }
 
-const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props, ref) => {
+const HeaderNavigation = forwardRef<HTMLDivElement, HeaderNavigationProps>((props, ref) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [isLogin, setIsLogin] = useState(false)
+  const [isLogin, setIsLogin] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const loginreduce = useAppSelector((state: any) => state.root.isLogin);
   const myCoin = useAppSelector((state: any) => state.root.myCoin);
   const profile = useAppSelector((state: any) => state.root.profile);
-
 
   const handleLogin = () => {
     router.push(`/auth/login`);
   };
 
-  useEffect(()=>{
-      setIsLogin(!! localStorage.getItem("access_token"))
-  },[loginreduce])
+  useEffect(() => {
+    setIsLogin(!!localStorage.getItem("access_token"));
+  }, [loginreduce]);
 
   const fetchProfile = async () => {
     try {
-      const userRes = await  userapi.getProfile();
+      const userRes = await userapi.getProfile();
       if (userRes.status === 200) {
         dispatch(setProfile(userRes.data.data));
       }
@@ -46,143 +43,195 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
     }
   };
 
-  useEffect(()=>{
-    //  fetchProfile();
-  },[])
+  useEffect(() => {
+    // fetchProfile();
+  }, []);
 
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    localStorage.removeItem('profile')
-    setIsLogin(false)
-    handleLogin()
-  }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('profile');
+    setIsLogin(false);
+    handleLogin();
+  };
+
+  // Dropdown menu data
+  const dropdownMenus = {
+    courses: [
+      { title: 'Khóa học IELTS', href: `${path.courses}/ielts` },
+      { title: 'Khóa học TOEIC', href: `${path.courses}/toeic` },
+      { title: 'Khóa học giao tiếp', href: `${path.courses}/speaking` },
+      { title: 'Tất cả khóa học', href: path.courses }
+    ],
+    vocabulary: [
+      { title: 'Từ vựng theo chủ đề', href: `${path.vocabulary}` },
+      { title: 'Từ vựng của tôi', href: `${path.vocabulary}/my-vocabulary` },
+      { title: 'Ôn tập ngay', href: `${path.vocabulary}/pratice` }
+    ],
+    tests: [
+      { title: 'Bài kiểm tra ngữ pháp', href: `${path.tests}/grammar` },
+      { title: 'Bài kiểm tra từ vựng', href: `${path.tests}/vocabulary` },
+      { title: 'Bài kiểm tra tổng hợp', href: `${path.tests}/comprehensive` },
+      { title: 'Tất cả bài test', href: path.tests }
+    ]
+  };
 
   return (
     <>
-      {/* Header Navigation */}
-      <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 z-9999">
+      <header className="bg-slate-900 shadow-sm border-b border-gray-200 sticky top-0 z-[9999]">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-between">
-            {/* Logo */}
-            <RiveWrapper
-              src="/juli-logo.riv"
-              autoplay
-              style={{ width: 40, height: 40, background: "transparent" }}
-            />
-            <Link
-              className="text-2xl font-bold text-gray-100 cursor-pointer"
-              href={path.home}
-            >
-              Học Cùng Bạn
-            </Link>
-
+              <RiveWrapper
+                src="/juli-logo.riv"
+                autoplay
+                style={{ width: 40, height: 40, background: "transparent" }}
+              />
+              <Link
+                className="text-2xl font-bold text-gray-100 cursor-pointer"
+                href={path.home}
+              >
+                Học Cùng Bạn
+              </Link>
             </div>
 
             {/* Navigation Menu */}
             <nav className="hidden md:flex items-center space-x-6 text-slate-50">
-             <Link
-                className="cursor-pointer hover:text-green-600"
-                href={`${path.courses}`}
+              {/* Khóa học - Dropdown */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('courses')}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
-                Khóa học
-              </Link>
-             <Link
-                className="cursor-pointer hover:text-green-600"
-                href={`${path.vocabulary}`}
+                <div className="flex items-center gap-1 cursor-pointer hover:text-green-600 transition-colors duration-200">
+                  <span>Khóa học</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${activeDropdown === 'courses' ? 'rotate-180' : ''}`} />
+                </div>
+                
+                {/* Dropdown Menu */}
+                <div className={`absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transition-all duration-300 ${
+                  activeDropdown === 'courses' 
+                    ? 'opacity-100 translate-y-0 visible' 
+                    : 'opacity-0 -translate-y-2 invisible'
+                }`}>
+                  {dropdownMenus.courses.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className="block px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Từ vựng - Dropdown */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('vocabulary')}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
-                Từ vựng
-              </Link>
-             <Link
-                className="cursor-pointer hover:text-green-600"
-                href={`${path.tests}`}
+                <div className="flex items-center gap-1 cursor-pointer hover:text-green-600 transition-colors duration-200">
+                  <span>Từ vựng</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${activeDropdown === 'vocabulary' ? 'rotate-180' : ''}`} />
+                </div>
+                
+                <div className={`absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transition-all duration-300 ${
+                  activeDropdown === 'vocabulary' 
+                    ? 'opacity-100 translate-y-0 visible' 
+                    : 'opacity-0 -translate-y-2 invisible'
+                }`}>
+                  {dropdownMenus.vocabulary.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className="block px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bài Kiểm tra - Dropdown */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('tests')}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
-                Bài Kiểm tra
-              </Link>
-             <Link
-                className="cursor-pointer hover:text-green-600"
+                <div className="flex items-center gap-1 cursor-pointer hover:text-green-600 transition-colors duration-200">
+                  <span>Bài Kiểm tra</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${activeDropdown === 'tests' ? 'rotate-180' : ''}`} />
+                </div>
+                
+                <div className={`absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transition-all duration-300 ${
+                  activeDropdown === 'tests' 
+                    ? 'opacity-100 translate-y-0 visible' 
+                    : 'opacity-0 -translate-y-2 invisible'
+                }`}>
+                  {dropdownMenus.tests.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className="block px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Nói theo - No dropdown */}
+              <Link
+                className="cursor-pointer hover:text-green-600 transition-colors duration-200"
                 href={`${path.shadowingpage}`}
               >
                 Nói theo
               </Link>
+
+              {/* Âm nhạc - No dropdown */}
               <Link
-                className="cursor-pointer hover:text-green-600"
+                className="cursor-pointer hover:text-green-600 transition-colors duration-200"
                 href={`${path.lofichill}`}
               >
                 Âm nhạc
               </Link>
-          
             </nav>
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
-              {/* Search Bar */}
-              {/* <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                />
-              </div> */}
-              <Moon className="hidden w-5 h-5 text-gray-500 cursor-pointer"/>
-              <Sun className="w-5 h-5 text-gray-500 cursor-pointer"/>
-              <Bell className="w-5 h-5 text-gray-500 cursor-pointer"/>
+              <Moon className="hidden w-5 h-5 text-gray-500 cursor-pointer" />
+              <Sun className="w-5 h-5 text-gray-500 cursor-pointer hover:text-yellow-500 transition-colors duration-200" />
+              <Bell className="w-5 h-5 text-gray-500 cursor-pointer hover:text-blue-500 transition-colors duration-200" />
 
-              <div className="flex justify-center items-center p-2 bg-gray-200 rounded-md" >
-              {/* <BadgeCent className="w-5 h-5 text-green-500 cursor-pointer"/> */}
-
-                {/*  Card */}
-                  <div className=" p-0 flex bg-gray-200">
-                    <div className="spinningasset ticket2 is-sm">
-                      <div className="flex items-center justify-center relative" ref={ref}>
-                        <div className=""></div>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <em></em>
-                        <em></em>
-                        <div></div>
-                      </div>
+              <div className="flex justify-center items-center p-2 bg-gray-200 rounded-md">
+                <div className="p-0 flex bg-gray-200">
+                  <div className="spinningasset ticket2 is-sm">
+                    <div className="flex items-center justify-center relative" ref={ref}>
+                      <div className=""></div>
+                      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                      <em></em><em></em>
+                      <div></div>
                     </div>
-                    {profile && <AnimatedNumber value={profile.totalScore} />}
-
                   </div>
+                  {profile && <AnimatedNumber value={profile.totalScore} />}
                 </div>
+              </div>
 
-              <Flame className="w-6 h-6 text-orange-500 cursor-pointer"/>
+              <Flame className="w-6 h-6 text-orange-500 cursor-pointer hover:text-orange-600 transition-colors duration-200" />
 
-              {/* Language & User Actions */}
               <div className="flex items-center space-x-3">
-                {/* <div className="flex items-center gap-1 cursor-pointer">
-                  <span className="text-sm">🌐 Eng</span>
-                  <ChevronDown className="w-3 h-3" />
-                </div> */}
-  
-                {
-                  !isLogin && 
-                <span
-                  className="cursor-pointer hover:text-gray-300 text-sm text-gray-100"
-                  onClick={() => handleLogin()}
-                >
-                  Đăng nhập
-                </span>
-                }
-                {/* <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
-                  Get Started
-                </button> */}
-                          {/* User */}
-                {/* <UserDropdown /> */}
+                {!isLogin && (
+                  <span
+                    className="cursor-pointer hover:text-gray-300 text-sm text-gray-100 transition-colors duration-200"
+                    onClick={() => handleLogin()}
+                  >
+                    Đăng nhập
+                  </span>
+                )}
+
                 <Popover
                   offsetInput={10}
                   className="z-50"
@@ -190,23 +239,21 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
                     <div className='relative rounded-sm border border-gray-200 bg-white shadow-md z-50'>
                       <Link
                         href={""}
-                        className='block w-full bg-white px-4 py-3 text-left hover:bg-slate-100 hover:text-cyan-500 text-gray-600'
+                        className='block w-full bg-white px-4 py-3 text-left hover:bg-slate-100 hover:text-cyan-500 text-gray-600 transition-colors duration-200'
                       >
                         My account
                       </Link>
-                
                       <button
                         onClick={handleLogout}
-                        className='block w-full bg-white px-4 py-3 text-left hover:bg-slate-100 hover:text-cyan-500 text-gray-600'
+                        className='block w-full bg-white px-4 py-3 text-left hover:bg-slate-100 hover:text-cyan-500 text-gray-600 transition-colors duration-200'
                       >
                         Logout
                       </button>
                     </div>
                   }
                 >
-                  <div className='h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-slate-400 relative'>
+                  <div className='h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-slate-400 relative hover:ring-2 hover:ring-green-500 transition-all duration-200'>
                     <div className='flex h-full w-full items-center justify-center'>
-                      {/* {profile?.avatar ? ( */}
                       {false ? (
                         <img src={""} alt='avatar' className='h-full w-full object-cover' />
                       ) : (
@@ -235,7 +282,6 @@ const HeaderNavigation=forwardRef<HTMLDivElement, HeaderNavigationProps>((props,
       </header>
     </>
   );
-})
+});
 
-
-export default HeaderNavigation
+export default HeaderNavigation;
