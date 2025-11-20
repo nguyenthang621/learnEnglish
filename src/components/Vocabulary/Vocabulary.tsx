@@ -284,7 +284,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
   }
 
   return (
-    <div className="h-screen flex bg-gray-50 max-w-7xl mx-auto p-6 bg-white">
+    <div className="h-[90vh] flex bg-gray-50 max-w-7xl mx-auto m-6 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       {/* Pane 1: Groups Sidebar */}
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
