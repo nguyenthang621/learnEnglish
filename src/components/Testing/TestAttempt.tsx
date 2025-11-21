@@ -44,7 +44,8 @@ interface Answer {
 }
 
 interface Props {
-    testId: string
+    testId: string,
+    attempt_id: number
 }
 
 export default function TestAttemptPage({ 
@@ -66,9 +67,8 @@ export default function TestAttemptPage({
     try {
       setLoading(true);
       const response = await testAPI.startTest(Number(testId));
-
-      if (response.status === 200 && response.data.data) {    
-        setQuestions(response.data.data.questions || []);
+      if (response.status === 200 && response.data) {    
+        setQuestions(response.data.data.test.questions || []);
         setAttempt_id(response.data.data.attempt_id)
         setTestData(response.data.data)
       }
@@ -116,7 +116,7 @@ export default function TestAttemptPage({
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify({ question_id: questionId, answer })
       // });
-      const response = await testAPI.saveAnswer(Number(testId),questionId, answer, 0)
+      const response = await testAPI.saveAnswer(Number(attempt_id),questionId, answer, 0)
       console.log("response: ", response);
     } catch (error) {
       console.error('Failed to save answer:', error);

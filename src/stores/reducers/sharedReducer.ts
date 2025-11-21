@@ -1,4 +1,5 @@
 "use client"
+import { BookmarkCollection } from "@/components/Vocabulary/MyVocabulary";
 import { Category } from "@/types/passage.type";
 import { Profile } from "@/types/user.type";
 // import { LocalStorage } from "@/utils/localStorage";
@@ -14,6 +15,7 @@ export interface SharedState {
   expandedLessons: string[];
   myCoin: number;
   profile: Profile | null;
+  collections: BookmarkCollection[] | [];
 }
 
 export const initialState: SharedState = {
@@ -27,6 +29,7 @@ export const initialState: SharedState = {
   expandedLessons: [],
   myCoin: 0,
   profile: null,
+  collections: [],
 };
 
 export const logout = createAction(
@@ -71,6 +74,12 @@ export const setProfile = createAction<Profile | null>(
 );
 
 
+export const setCollections = createAction<BookmarkCollection[] | []>(
+  "/shared/setCollections"
+);
+
+
+
 const sharedReducer = createReducer(initialState, (builder) => {
   builder.addCase(logout, (state) => {
     state.isLogin = false;
@@ -104,6 +113,9 @@ const sharedReducer = createReducer(initialState, (builder) => {
   });
   builder.addCase(setProfile, (state, action) => {
     if (action.payload) state.profile = action.payload;
+  });
+  builder.addCase(setCollections, (state, action) => {
+    if (action.payload) state.collections = action.payload;
   });
 });
 

@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import vocabularyAPI from '@/apis/vocabulary.api';
 import RiveWrapper from '@/components/Animation/RiveWrapper';
+import { useAppDispatch, useAppSelector } from '@/stores/hooks';
+import { setCollections } from '@/stores/reducers/sharedReducer';
 
 
 interface VocabularyType {
@@ -71,7 +73,7 @@ interface BookmarkCollectionDetail {
   bookmarks?: Bookmark[];
 }
 
-interface BookmarkCollection {
+export interface BookmarkCollection {
   id: number;
   user_id: number;
   name: string;
@@ -88,10 +90,12 @@ interface BookmarkCollection {
 
 export default function MyBookmarks() {
   const [collectionDetail, setCollectionDetail] = useState<BookmarkCollectionDetail[]>([]);
-  const [collections, setCollections] = useState<BookmarkCollection[]>([]);
+  // const [collections, setCollections] = useState<BookmarkCollection[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const collections = useAppSelector((state) => state.root.collections);
   
   // Modals
   const [showCollectionModal, setShowCollectionModal] = useState(false);
@@ -115,8 +119,9 @@ export default function MyBookmarks() {
     try {
       setLoading(true);
       const response = await vocabularyAPI.getBookmarkCollections();
-      if (response.data && response.status === 200) {    
-        setCollections(response.data.data);
+      if (response.data && response.status === 200) {  
+        dispatch(setCollections(response.data.data));  
+        // setCollections(response.data.data);
       }
       setLoading(false);
     } catch (error) {
@@ -218,9 +223,11 @@ export default function MyBookmarks() {
 
       if (response.data && response.status === 200) {
         await fetchCollections();
-        if (selectedCollection === collectionId) {
-          setSelectedCollection(null);
-        }
+        // if (selectedCollection === collectionId) {
+        // }
+        console.log("selectedCollection: ", selectedCollection, collectionId);
+        setSelectedCollection(null);
+        setSelectedCollectionId(null)
       }
     } catch (error) {
       console.error('Error deleting collection:', error);
@@ -263,16 +270,17 @@ export default function MyBookmarks() {
     }
   };
 
-  const handleRemoveFromBookmark = async (bookmarkId: number) => {
-    if (!bookmarkId || !selectedCollection) return;
+  const handleDeleteVocabulary = async (vocabularyId: number) => {
+    if (!vocabularyId || !selectedCollectionId) return;
     try {
       setLoading(true);
-      const response = await vocabularyAPI.deleteVocabularyCollections(bookmarkId);
+      const response = await vocabularyAPI.deleteVocabularyCollections(vocabularyId, selectedCollectionId);
 
       if (response.data && response.status) {
-        await loadCollectionDetail(selectedCollection);
+        await loadCollectionDetail(selectedCollectionId);
         await fetchCollections(); // Update counts
         setSelectedVocabularyId(null);
+        setSelectedCollectionId(null)
       }
     } catch (error) {
       console.error('Error removing from bookmark:', error);
@@ -280,6 +288,8 @@ export default function MyBookmarks() {
       setLoading(false);
     }
   };
+
+
 
   const handleUpdateNote = async (bookmarkId: number, note: string) => {
     console.log("nodte: ", note);
@@ -348,7 +358,6 @@ export default function MyBookmarks() {
     normal: 'border-gray-300 bg-white'
   };
 
-  console.log("selectedCollectionId: ", selectedCollectionId);
 
   return (
     <div className="h-[90vh] flex max-w-7xl mx-auto m-6 border border-gray-200 rounded-lg shadow-sm overflow-hidden">
@@ -368,8 +377,10 @@ export default function MyBookmarks() {
                 </div>
                 <div className="justify-between items-center pt-0 space-y-4 sm:flex sm:space-y-0">
                     <div className="items-center space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
-                        <button id="close-modal" type="button" onClick={()=> setSelectedVocabularyId(null)}  className="cursor-pointer py-2 px-4 w-full text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 sm:w-auto hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Không</button>
-                        <button id="confirm-button" type="button" onClick={()=> handleRemoveFromBookmark(selectedVocabularyId)} className="cursor-pointer bg-green-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Xóa</button>
+                        <button id="close-modal" type="button" onClick={()=> {
+                          setSelectedCollectionId(null)
+                          setSelectedVocabularyId(null)}}  className="cursor-pointer py-2 px-4 w-full text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 sm:w-auto hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Không</button>
+                        <button id="confirm-button" type="button" onClick={()=> handleDeleteVocabulary(selectedVocabularyId)} className="cursor-pointer bg-green-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Xóa</button>
                     </div>
                 </div>
             </div>
@@ -377,11 +388,11 @@ export default function MyBookmarks() {
       </div>}
 
       {/* model confirm delete collection*/}
-      {selectedCollectionId && <div id="info-popup" className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full bg-slate-900/50">
+      {selectedCollectionId && !selectedVocabularyId && <div id="info-popup" className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full bg-slate-900/50">
         <div className="relative p-4 w-full max-w-lg h-full md:h-auto top-1/2 transform -translate-y-1/2 mx-auto">
             <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 md:p-8">
                 <div className="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
-                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bạn có muốn bộ sưu tập từ vựng này?</h3>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bạn có muốn xoá bộ sưu tập từ vựng này?</h3>
                     <p>
                       Xóa vĩnh viễn bộ sưu tập
                     <span className='text-red-600'> 
@@ -668,7 +679,11 @@ export default function MyBookmarks() {
                                 <FolderInput className="w-4 h-4" />
                             </button>
                             <button
-                                onClick={() => setSelectedVocabularyId(bookmark.id)}
+                                onClick={() => {
+                                  setSelectedVocabularyId(bookmark.bookmarkable.id)
+                                  setSelectedCollectionId(bookmark.collection_id)
+                                }}
+                                  
                                 className="p-2 rounded hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors"
                                 title="Xóa"
                             >
@@ -905,7 +920,7 @@ export default function MyBookmarks() {
 
       {/* Move Vocabulary Modal */}
       {showMoveModal && movingBookmark && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-slate-900/20 bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-gray-800">Di Chuyển Từ Vựng</h3>

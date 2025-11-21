@@ -89,7 +89,6 @@ class Http {
         else if (
           error.response.status === 401 
         ) {
-          console.log(">>", error?.response?.data);
           this.refresh_tokenRequest = this.refresh_tokenRequest
             ? this.refresh_tokenRequest
             : auth.refreshToken().finally(() => {
@@ -103,8 +102,9 @@ class Http {
               const { access_token } = data.data;
               console.log("new token ", data);
               this.access_token = access_token;
-              CookiesStorage.setItem("access_token", access_token);
-
+              CookiesStorage.setItem("access_token", this.access_token || "");
+              CookiesStorage.setItem("refresh_token", this.refresh_token || "");
+              CookiesStorage.setItem("profile", JSON.stringify(this.profile));
               error.response.config.Authorization = `Bearer ${access_token}`;
               return this.instance(error.response.config); // tiếp tục gọi api
             })

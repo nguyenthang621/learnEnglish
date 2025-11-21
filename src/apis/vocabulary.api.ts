@@ -29,7 +29,7 @@ const vocabularyAPI = {
     return http.get<any>(`/auth/bookmark-collections`);
   },
   deleteBookmarkCollections: function (id: number) {
-    return http.delete<any>(`/auth/bookmark-collections/${id}`);
+    return http.post<any>(`/auth/bookmark-collections/${id}/delete`);
   },
   ceateBookmarkCollections: function ({name, description, is_default}: {name: string, description: string, is_default: boolean}) {
     return http.post<any>(`/auth/bookmark-collections`,{ name: name , description: description, is_default: is_default});
@@ -40,9 +40,46 @@ const vocabularyAPI = {
   getDeatilBookmarkCollections: function (id: number) {
     return http.get<any>(`/auth/bookmark-collections/${id}`);
   },
-  deleteVocabularyCollections: function (id: number) {
-    return http.delete<any>(`/auth/bookmark-collections/${id}`);
-  }
+  deleteVocabularyCollections: function (vocabularyId: number, collection_id: number) {
+    return http.post<any>(`/auth/vocabularies/${vocabularyId}/bookmark/delete`, {collection_id});
+  },
+
+  createVocabulary: function ({
+    word,
+    pronunciation,
+    definition_vi,
+    personal_note,
+    collection_id,
+    examples,
+  }: {
+    word: string;
+    pronunciation: string;
+    definition_vi: string;
+    personal_note: string;
+    collection_id: number;
+    examples: {
+      vocabulary_type: number;
+      english_example_sentences: string;
+      vietnamese_translation: string;
+    }[];
+  }) {
+    const formData = new FormData();
+
+    formData.append("word", word);
+    formData.append("pronunciation", pronunciation);
+    formData.append("definition_vi", definition_vi);
+    formData.append("personal_note", personal_note);
+    formData.append("collection_id", String(collection_id));
+
+    examples.forEach((ex, i) => {
+      formData.append(`examples[${i}][vocabulary_type]`, String(ex.vocabulary_type));
+      formData.append(`examples[${i}][english_example_sentences]`, ex.english_example_sentences);
+      formData.append(`examples[${i}][vietnamese_translation]`, ex.vietnamese_translation);
+    });
+
+    return http.post(`/auth/create-vocabulary`, formData);
+  },
+
 };
 
 export default vocabularyAPI;

@@ -41,8 +41,8 @@ interface DictionaryEntry {
 function ModalInsertVocabulary() {
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [fromLang, setFromLang] = useState("vi");
-  const [toLang, setToLang] = useState("en");
+  const [fromLang, setFromLang] = useState("en");
+  const [toLang, setToLang] = useState("vi");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -308,8 +308,8 @@ function ModalInsertVocabulary() {
                   onChange={(e) => setFromLang(e.target.value)}
                   className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="vi">Tiếng Việt</option>
                   <option value="en">English</option>
+                  <option value="vi">Tiếng Việt</option>
                 </select>
 
                 <button
@@ -337,8 +337,8 @@ function ModalInsertVocabulary() {
                   onChange={(e) => setToLang(e.target.value)}
                   className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="en">English</option>
                   <option value="vi">Tiếng Việt</option>
+                  <option value="en">English</option>
                 </select>
               </div>
 

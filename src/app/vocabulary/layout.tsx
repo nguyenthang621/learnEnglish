@@ -24,7 +24,6 @@ function AuthLayout({
 
   return (
     <div className="">
-        
       <div
       ref={isScroll ? scrollRef : undefined}
       className={`relative max-h-[100vh] ${
