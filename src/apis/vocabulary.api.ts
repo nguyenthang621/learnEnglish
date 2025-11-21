@@ -22,6 +22,9 @@ const vocabularyAPI = {
   getGroupVocvabulary: function ({page, limit}: SearchPayload) {
     return http.get<any>(`/vocabulary/groups?page=${page}&limit=${limit}`);
   },
+  getDetailGroupVocvabulary: function (groupId: number) {
+    return http.get<any>(`/vocabulary/groups/${groupId}`);
+  },
   getVocvabularyByTopic: function (data: {page: number, limit: number, topicid: string}) {
     return http.get<any>(`/api/vocabulary/bytopic?page=${data.page}&limit=${data.limit}&topic=${data.topicid}`);
   },

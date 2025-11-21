@@ -121,6 +121,24 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
     }
   }
 
+  const fetchDetailGroups = async (groupId: number) => {
+    try {
+      setLoading(true);
+      const response = await vocabularyAPI.getDetailGroupVocvabulary(groupId);
+      if (response.data && response.data.data) {    
+
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching detail groups:", error);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
   useEffect(() => {
     fetchGroups();
   }, []);
@@ -155,7 +173,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
       }
       return null;
     };
-    return findTopic(topicsTree);
+    return findTopic(cTree);
   };
 
   const renderTreeNode = (node: TopicData, level: number = 0): JSX.Element => {
@@ -174,7 +192,6 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
           style={{ marginLeft: `${level * 20}px` }}
           onClick={() => {
             if (node?.children && node.children.length === 0) {
-              console.log("123");
               setSelectedTopic(node.id);
             } else if (hasChildren) {
               toggleExpanded(node.id);
@@ -380,7 +397,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
                       {group.description}
                     </p>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-500">{group._count?.topics || 0} chủ đề</span>
+                      <span className="text-gray-500">{group.children.length || 0} chủ đề</span>
                       <span className="text-gray-500">
                         {/* {new Date(group.createdAt).toLocaleDateString('vi-VN')} */}
                       </span>
@@ -445,11 +462,11 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
                       <BookOpen className="w-4 h-4" />
-                      {selectedTopicData["_count"].topicWords || 0} từ vựng
+                      {selectedTopicData["_count"]?.topicWords || 0 || 0} từ vựng
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      ~{Math.ceil((selectedTopicData["_count"].topicWords || 0) / 0.6)} phút
+                      ~{Math.ceil((selectedTopicData["_count"]?.topicWords || 0 || 0) / 0.6)} phút
                     </span>
                   </div>
                 </div>
@@ -537,7 +554,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
                 <div className="bg-gray-50 rounded-xl p-4">
                   <p className="text-gray-700 leading-relaxed">
                     Chủ đề này bao gồm các từ vựng cần thiết cho {selectedTopicData.title.toLowerCase()}. 
-                    Bạn sẽ học được {selectedTopicData["_count"].topicWords || 0} từ vựng quan trọng với các ví dụ thực tế 
+                    Bạn sẽ học được {selectedTopicData["_count"]?.topicWords || 0 || 0} từ vựng quan trọng với các ví dụ thực tế 
                     và bài tập tương tác để củng cố kiến thức.
                   </p>
                 </div>
