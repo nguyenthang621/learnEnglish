@@ -4,7 +4,25 @@ export interface AttemptResponse {
     time_limit_minutes: number;
     remaining_time_seconds: number;
     total_questions: number;
-    total_points: string
+    total_points: string;
+    id: number;
+    title: string;
+    slug: string;
+    user_id: number;
+    description: string;
+    instructions: string;
+    test_type_id: number;
+    level_id: number;
+    max_attempts: number;
+    passing_score: string;
+    shuffle_questions: boolean;
+    show_results_immediately: boolean;
+    allow_review: boolean;
+    is_published: boolean;
+    has_groups: number;
+    layout_type: string;
+    settings: string; // hoặc JSON nếu bạn parse → any[] hoặc Record<string, any>
+    deleted_at: string | null;
 }
 
 /* ===========================

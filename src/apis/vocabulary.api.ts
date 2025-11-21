@@ -46,6 +46,9 @@ const vocabularyAPI = {
   deleteVocabularyCollections: function (vocabularyId: number, collection_id: number) {
     return http.post<any>(`/auth/vocabularies/${vocabularyId}/bookmark/delete`, {collection_id});
   },
+  addVocabularyToCollections: function (vocabularyId: number, collection_id: number) {
+    return http.post<any>(`/auth/vocabularies/${vocabularyId}/bookmark`, {collection_id});
+  },
 
   createVocabulary: function ({
     word,

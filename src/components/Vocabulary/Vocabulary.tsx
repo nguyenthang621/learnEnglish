@@ -5,6 +5,7 @@ import {
   Filter, 
   ChevronRight, 
   ChevronDown,
+  ChevronUp,
   BookOpen, 
   Target, 
   Globe, 
@@ -22,11 +23,15 @@ import {
   Star,
   Folder,
   FolderOpen,
-  FileText
+  FileText,
+  ArrowLeft,
+  Volume2,
+  BookMarked
 } from 'lucide-react';
 import { TopicGroup } from '@/types/vocabulary.type';
 import vocabularyAPI from '@/apis/vocabulary.api';
 import RiveWrapper from '@/components/Animation/RiveWrapper';
+import BookmarkButton from '../ExtentionTranslate/BtnSave';
 
 // Type definitions matching API structure
 interface ApiTopic {
@@ -50,7 +55,7 @@ interface TopicData extends ApiTopic {
   learned?: number;
   reviewing?: number;
   mastered?: number;
-  children?: TopicData[];
+  children: TopicData[];
   type?: 'category' | 'topic';
 }
 
@@ -88,12 +93,78 @@ const generateMockProgress = (topicId: string) => {
 };
 
 
+// --------------------------detail vocabulary API types-----------------------------
+
+interface GroupResponse {
+  group: Group;
+}
+
+interface Group {
+  id: number;
+  title: string;
+  image: string | null;
+  children: any[]; // nếu sau này có type con thì bổ sung
+  vocabularies: Vocabulary[];
+}
+
+interface Vocabulary {
+  id: number;
+  word: string;
+  pronunciation: string;
+  part_of_speech: string;
+  definition_en: string | null;
+  definition_vi: string | null;
+  examples: VocabularyExample[];
+}
+
+interface VocabularyExample {
+  id: number;
+  name: string;
+  acronym: string;
+  name_vi: string;
+  color: string;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+
+  pivot: VocabularyPivot;
+}
+
+interface VocabularyPivot {
+  vocabulary_id: number;
+  vocabulary_type_id: number;
+  level_id: number;
+  english_example_sentences: string; // HTML string
+  vietnamese_translation: string; // HTML string
+}
+
+// Collection interface for BookmarkButton
+interface Collection {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+  bookmarks_count: number;
+}
+
+// -----------------------------
+
+
 
 interface ThreePaneVocabularyLayoutProps {}
 
 const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [detailVocabulary, setDetailVocabulary] = useState<GroupResponse | null>(null);
+  const [showVocabularyDetail, setShowVocabularyDetail] = useState<boolean>(false);
+  const [expandedVocabularies, setExpandedVocabularies] = useState<Set<number>>(new Set());
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [savingVocabId, setSavingVocabId] = useState<number | null>(null);
+
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<FilterLevel>('all');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -126,7 +197,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
       setLoading(true);
       const response = await vocabularyAPI.getDetailGroupVocvabulary(groupId);
       if (response.data && response.data.data) {    
-
+          setDetailVocabulary(response.data.data);
       }
       setLoading(false);
     } catch (error) {
@@ -135,12 +206,64 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
     }
   }
 
+  // Fetch collections (mock data - replace with actual API call)
+  const fetchCollections = async () => {
+    try {
+      // TODO: Replace with actual API call
+      // const response = await vocabularyAPI.getCollections();
+      // setCollections(response.data.data);
+      
+      // Mock data for now
+      const mockCollections: Collection[] = [
+        {
+          id: 1,
+          user_id: 1,
+          name: "Từ vựng yêu thích",
+          description: "Bộ sưu tập mặc định",
+          is_default: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          bookmarks_count: 45
+        },
+        {
+          id: 2,
+          user_id: 1,
+          name: "Từ khó nhớ",
+          description: "Những từ cần ôn luyện thêm",
+          is_default: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          bookmarks_count: 23
+        },
+        {
+          id: 3,
+          user_id: 1,
+          name: "Business English",
+          description: "Từ vựng cho công việc",
+          is_default: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          bookmarks_count: 67
+        }
+      ];
+      setCollections(mockCollections);
+    } catch (error) {
+      console.log("Error fetching collections:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchGroups();
-  }, []);
+    console.log("selectedTopic changed:", selectedTopic);
+    if (selectedTopic){
+      fetchDetailGroups(Number(selectedTopic));
+      setShowVocabularyDetail(false); // Reset về overview khi chọn topic mới
+      setExpandedVocabularies(new Set()); // Reset expanded vocabularies
+    }
+  }, [selectedTopic]);
 
   useEffect(() => {
     fetchGroups();
+    fetchCollections();
   }, []);
 
 
@@ -153,6 +276,39 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
       newExpanded.add(nodeId);
     }
     setExpandedNodes(newExpanded);
+  };
+
+  const toggleVocabularyExpanded = (vocabId: number): void => {
+    const newExpanded = new Set(expandedVocabularies);
+    if (newExpanded.has(vocabId)) {
+      newExpanded.delete(vocabId);
+    } else {
+      newExpanded.add(vocabId);
+    }
+    setExpandedVocabularies(newExpanded);
+  };
+
+  const handleSaveVocabulary = async (vocabularyId: number, collectionId: number) => {
+    try {
+      setSavingVocabId(vocabularyId);
+      
+      // TODO: Replace with actual API call
+      // await vocabularyAPI.addToCollection(vocabularyId, collectionId);
+      
+      console.log(`Saving vocabulary ${vocabularyId} to collection ${collectionId}`);
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Show success message (you can use a toast notification library)
+      alert('Đã lưu từ vựng vào bộ sưu tập!');
+      
+      setSavingVocabId(null);
+    } catch (error) {
+      console.error("Error saving vocabulary:", error);
+      alert('Có lỗi xảy ra khi lưu từ vựng');
+      setSavingVocabId(null);
+    }
   };
 
   const getSelectedTopicData = (): ApiTopic | null => {
@@ -277,7 +433,11 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
     setSelectedGroup(groupId);
     setSelectedTopic(null);
     setExpandedNodes(new Set()); // Reset expanded nodes when switching groups
+    setShowVocabularyDetail(false);
+    setExpandedVocabularies(new Set());
   };
+
+
 
   const handleActionClick = (action: string, topicId: string): void => {
     console.log(`Action clicked: ${action}`, { selectedTopic, selectedGroup });
@@ -287,6 +447,200 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
     if (action === 'quiz' && selectedTopic) {
       window.location.href = `/vocabulary/quiz/${topicId}`;
     }
+  };
+
+  const handleShowVocabularyDetail = (): void => {
+    setShowVocabularyDetail(true);
+  };
+
+  const handleBackToOverview = (): void => {
+    setShowVocabularyDetail(false);
+    setExpandedVocabularies(new Set());
+  };
+
+  // Render vocabulary list
+  const renderVocabularyList = () => {
+    if (!detailVocabulary?.group?.vocabularies || detailVocabulary.group.vocabularies.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Chưa có từ vựng</h3>
+            <p className="text-gray-600">Chủ đề này chưa có từ vựng nào.</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={handleBackToOverview}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Quay lại</span>
+            </button>
+            <span className="text-sm text-gray-600">
+              {detailVocabulary.group.vocabularies.length} từ vựng
+            </span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {detailVocabulary.group.title}
+          </h2>
+        </div>
+
+        {/* Vocabulary List */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="space-y-4">
+            {detailVocabulary.group.vocabularies.map((vocab, index) => {
+              const isExpanded = expandedVocabularies.has(vocab.id);
+              const hasExamples = vocab.examples && vocab.examples.length > 0;
+              const isSaving = savingVocabId === vocab.id;
+
+              return (
+                <div 
+                  key={vocab.id} 
+                  className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-blue-300 transition-all duration-200 hover:shadow-md"
+                >
+                  {/* Word Header - Always Visible */}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                            #{index + 1}
+                          </span>
+                          <h3 className="text-2xl font-bold text-gray-900">
+                            {vocab.word}
+                          </h3>
+                          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                            <Volume2 className="w-5 h-5 text-blue-600" />
+                          </button>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
+                          <span className="font-mono bg-blue-50 text-blue-700 px-3 py-1 rounded-lg">
+                            {vocab.pronunciation}
+                          </span>
+                          <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg font-medium">
+                            {vocab.part_of_speech}
+                          </span>
+                        </div>
+
+                        {/* BookmarkButton */}
+                        <div className="max-w-xs">
+                          <BookmarkButton
+                            collections={collections}
+                            onSave={(collectionId) => handleSaveVocabulary(vocab.id, collectionId)}
+                            isLoading={isSaving}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Definitions */}
+                    <div className="space-y-3">
+                      {vocab.definition_vi && (
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <span className="text-xs font-bold text-green-700">VI</span>
+                            </div>
+                          </div>
+                          <p className="text-gray-700 leading-relaxed flex-1">
+                            {vocab.definition_vi}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {vocab.definition_en && (
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-xs font-bold text-blue-700">EN</span>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 leading-relaxed flex-1 italic">
+                            {vocab.definition_en}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Examples Toggle Button */}
+                    {hasExamples && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <button
+                          onClick={() => toggleVocabularyExpanded(vocab.id)}
+                          className="w-full flex items-center justify-between text-left hover:bg-gray-50 p-3 rounded-lg transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <BookMarked className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm font-semibold text-gray-700">
+                              Ví dụ ({vocab.examples.length})
+                            </span>
+                          </div>
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-gray-500" />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Examples - Collapsible */}
+                  {hasExamples && isExpanded && (
+                    <div className="px-6 pb-6 space-y-4 animate-in slide-in-from-top-2">
+                      {vocab.examples.map((example, idx) => (
+                        <div 
+                          key={example.id} 
+                          className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200"
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <span 
+                              className="text-xs font-bold px-2 py-1 rounded"
+                              style={{ 
+                                backgroundColor: `${example.color}20`,
+                                color: example.color 
+                              }}
+                            >
+                              {example.acronym}
+                            </span>
+                            <span className="text-xs text-gray-600 font-medium">{example.name_vi}</span>
+                          </div>
+                          
+                          {/* English Example */}
+                          <div 
+                            className="text-gray-800 mb-2 leading-relaxed font-medium"
+                            dangerouslySetInnerHTML={{ 
+                              __html: example.pivot.english_example_sentences 
+                            }}
+                          />
+                          
+                          {/* Vietnamese Translation */}
+                          <div 
+                            className="text-gray-600 text-sm leading-relaxed"
+                            dangerouslySetInnerHTML={{ 
+                              __html: example.pivot.vietnamese_translation 
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </>
+    );
   };
 
   if (loading) {
@@ -448,9 +802,11 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
         </div>
       </div>
 
-      {/* Pane 3: Topic Detail */}
+      {/* Pane 3: Topic Detail or Vocabulary List */}
       <div className="flex-1 bg-white flex flex-col">
-        {selectedTopicData ? (
+        {showVocabularyDetail && detailVocabulary ? (
+          renderVocabularyList()
+        ) : selectedTopicData ? (
           <>
             {/* Header */}
             <div className="p-[22px] border-b border-gray-200">
@@ -471,9 +827,12 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                    Sẵn sàng
-                  </span>
+                  <button 
+                    onClick={handleShowVocabularyDetail}
+                    className="bg-green-500 hover:bg-[#00c956] text-black px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    Xem Chi Tiết
+                  </button>
                 </div>
               </div>
             </div>
