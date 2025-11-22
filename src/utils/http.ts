@@ -99,12 +99,12 @@ class Http {
           return this.refresh_tokenRequest
             .then((data: any) => {
               console.log("data: ", data);
-              const { access_token } = data.data;
-              console.log("new token ", data);
+              const { access_token, refresh_token } = data.data;
               this.access_token = access_token;
+              this.refresh_token = refresh_token;
+
               CookiesStorage.setItem("access_token", this.access_token || "");
               CookiesStorage.setItem("refresh_token", this.refresh_token || "");
-              CookiesStorage.setItem("profile", JSON.stringify(this.profile));
               error.response.config.Authorization = `Bearer ${access_token}`;
               return this.instance(error.response.config); // tiếp tục gọi api
             })

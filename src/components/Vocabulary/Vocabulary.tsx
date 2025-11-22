@@ -31,7 +31,10 @@ import {
 import { TopicGroup } from '@/types/vocabulary.type';
 import vocabularyAPI from '@/apis/vocabulary.api';
 import RiveWrapper from '@/components/Animation/RiveWrapper';
-import BookmarkButton from '../ExtentionTranslate/BtnSave';
+import { BookmarkCollection } from './MyVocabulary';
+import { useAppDispatch, useAppSelector } from '@/stores/hooks';
+import { setCollections } from '@/stores/reducers/sharedReducer';
+import BookmarkButtonSimple from '../ExtentionTranslate/BookmarkButtonSimple';
 
 // Type definitions matching API structure
 interface ApiTopic {
@@ -137,19 +140,6 @@ interface VocabularyPivot {
   english_example_sentences: string; // HTML string
   vietnamese_translation: string; // HTML string
 }
-
-// Collection interface for BookmarkButton
-interface Collection {
-  id: number;
-  user_id: number;
-  name: string;
-  description: string | null;
-  is_default: boolean;
-  created_at: string;
-  updated_at: string;
-  bookmarks_count: number;
-}
-
 // -----------------------------
 
 
@@ -162,7 +152,7 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
   const [detailVocabulary, setDetailVocabulary] = useState<GroupResponse | null>(null);
   const [showVocabularyDetail, setShowVocabularyDetail] = useState<boolean>(false);
   const [expandedVocabularies, setExpandedVocabularies] = useState<Set<number>>(new Set());
-  const [collections, setCollections] = useState<Collection[]>([]);
+  // const [collections, setCollections] = useState<Collection[]>([]);
   const [savingVocabId, setSavingVocabId] = useState<number | null>(null);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -170,6 +160,9 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [groups, setGroups] = useState<TopicGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+
+  const collections = useAppSelector((state) => state.root.collections);
   
   const fetchGroups = async () => {
     try {
@@ -206,51 +199,20 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
     }
   }
 
-  // Fetch collections (mock data - replace with actual API call)
   const fetchCollections = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await vocabularyAPI.getCollections();
-      // setCollections(response.data.data);
-      
-      // Mock data for now
-      const mockCollections: Collection[] = [
-        {
-          id: 1,
-          user_id: 1,
-          name: "Từ vựng yêu thích",
-          description: "Bộ sưu tập mặc định",
-          is_default: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          bookmarks_count: 45
-        },
-        {
-          id: 2,
-          user_id: 1,
-          name: "Từ khó nhớ",
-          description: "Những từ cần ôn luyện thêm",
-          is_default: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          bookmarks_count: 23
-        },
-        {
-          id: 3,
-          user_id: 1,
-          name: "Business English",
-          description: "Từ vựng cho công việc",
-          is_default: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          bookmarks_count: 67
-        }
-      ];
-      setCollections(mockCollections);
+      setLoading(true);
+      const response = await vocabularyAPI.getBookmarkCollections();
+      if (response.data && response.status === 200) {  
+        dispatch(setCollections(response.data.data));  
+        // setCollections(response.data.data);
+      }
+      setLoading(false);
     } catch (error) {
-      console.log("Error fetching collections:", error);
+      console.log("Error fetching Collections:", error);
+      setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     console.log("selectedTopic changed:", selectedTopic);
@@ -263,9 +225,23 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
 
   useEffect(() => {
     fetchGroups();
-    fetchCollections();
+    if (collections.length === 0){
+      fetchCollections();
+    }
   }, []);
 
+  const handleClickBookmark = async (collection: BookmarkCollection) => {
+    try {
+      const payload = {name: collection.name, description: collection.description || "", is_default: true, collection_id: collection.id};
+      const response = await vocabularyAPI.updateBookmarkCollections(payload)
+
+      if (response.data && response.status === 200) {
+        await fetchCollections();
+      }
+    } catch (error) {
+      console.error('Error updating collection:', error);
+    } 
+  }
 
 
   const toggleExpanded = (nodeId: string): void => {
@@ -507,92 +483,98 @@ const Vocabulary: React.FC<ThreePaneVocabularyLayoutProps> = () => {
                   className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-blue-300 transition-all duration-200 hover:shadow-md"
                 >
                   {/* Word Header - Always Visible */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                            #{index + 1}
-                          </span>
-                          <h3 className="text-2xl font-bold text-gray-900">
-                            {vocab.word}
-                          </h3>
-                          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                            <Volume2 className="w-5 h-5 text-blue-600" />
-                          </button>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
-                          <span className="font-mono bg-blue-50 text-blue-700 px-3 py-1 rounded-lg">
-                            {vocab.pronunciation}
-                          </span>
-                          <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg font-medium">
-                            {vocab.part_of_speech}
-                          </span>
-                        </div>
-
-                        {/* BookmarkButton */}
-                        <div className="max-w-xs">
-                          <BookmarkButton
-                            collections={collections}
-                            onSave={(collectionId) => handleSaveVocabulary(vocab.id, collectionId)}
-                            isLoading={isSaving}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Definitions */}
-                    <div className="space-y-3">
-                      {vocab.definition_vi && (
-                        <div className="flex gap-3">
-                          <div className="flex-shrink-0 mt-1">
-                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-bold text-green-700">VI</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-700 leading-relaxed flex-1">
-                            {vocab.definition_vi}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {vocab.definition_en && (
-                        <div className="flex gap-3">
-                          <div className="flex-shrink-0 mt-1">
-                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-bold text-blue-700">EN</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 leading-relaxed flex-1 italic">
-                            {vocab.definition_en}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Examples Toggle Button */}
-                    {hasExamples && (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <button
-                          onClick={() => toggleVocabularyExpanded(vocab.id)}
-                          className="w-full flex items-center justify-between text-left hover:bg-gray-50 p-3 rounded-lg transition-colors"
-                        >
-                          <div className="flex items-center gap-2">
-                            <BookMarked className="w-4 h-4 text-gray-500" />
-                            <span className="text-sm font-semibold text-gray-700">
-                              Ví dụ ({vocab.examples.length})
-                            </span>
-                          </div>
-                          {isExpanded ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500" />
-                          )}
+              <div 
+                className="p-6 group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2 justify-between">
+                      <div className='flex items-center gap-3'>
+                        <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                          #{index + 1}
+                        </span>
+                        <h3 className="text-2xl font-bold text-gray-900">
+                          {vocab.word}
+                        </h3>
+                        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                          <Volume2 className="w-5 h-5 text-blue-600" />
                         </button>
                       </div>
-                    )}
+                      
+                      {/* BookmarkButton - Hiện khi hover với Tailwind group */}
+                      <div className="max-w-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
+                        <BookmarkButtonSimple
+                          collections={collections}
+                          onSelectCollection={handleClickBookmark}
+                          onSave={(collectionId) => handleSaveVocabulary(vocab.id, collectionId)}
+                          isLoading={isSaving}
+                          isShowTitle={false}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
+                      <span className="font-mono bg-blue-50 text-blue-700 px-3 py-1 rounded-lg">
+                        {vocab.pronunciation}
+                      </span>
+                      <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg font-medium">
+                        {vocab.part_of_speech}
+                      </span>
+                    </div>
                   </div>
+                </div>
+
+                {/* Definitions */}
+                <div className="space-y-3">
+                  {vocab.definition_vi && (
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-bold text-green-700">VI</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">
+                        {vocab.definition_vi}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {vocab.definition_en && (
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-bold text-blue-700">EN</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed flex-1 italic">
+                        {vocab.definition_en}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Examples Toggle Button */}
+                {hasExamples && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => toggleVocabularyExpanded(vocab.id)}
+                      className="w-full flex items-center justify-between text-left hover:bg-gray-50 p-3 rounded-lg transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <BookMarked className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm font-semibold text-gray-700">
+                          Ví dụ ({vocab.examples.length})
+                        </span>
+                      </div>
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-500" />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
 
                   {/* Examples - Collapsible */}
                   {hasExamples && isExpanded && (

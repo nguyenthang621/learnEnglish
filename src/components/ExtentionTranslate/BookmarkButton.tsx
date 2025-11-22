@@ -18,6 +18,7 @@ interface BookmarkButtonProps {
   onSelectCollection?: (collection: Collection) => void;
   isLoading?: boolean;
   className?: string;
+  isShowTitle?: boolean;
 }
 
 export default function BookmarkButton({ 
@@ -25,7 +26,8 @@ export default function BookmarkButton({
   onSave, 
   onSelectCollection,
   isLoading = false,
-  className = ''
+  className = '',
+  isShowTitle = true,
 }: BookmarkButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -61,7 +63,7 @@ export default function BookmarkButton({
 
   
   return (
-    <div className={`relative w-full ${className} z-50`}>
+    <div className={`relative w-full ${className} z-20`}>
       <div className="flex items-center gap-0 w-full">
         {/* Nút chính - Lưu từ */}
         <button
@@ -70,14 +72,14 @@ export default function BookmarkButton({
           className="flex-1 flex items-center justify-center rounded-l-lg bg-blue-500 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
         >
           <Bookmark className="w-4 h-4 mr-2 flex-shrink-0" />
-          <span className="truncate">Lưu vào: {selectedCollection.name}</span>
+          {isShowTitle && <span className="truncate">Lưu vào: {selectedCollection.name}</span>}
         </button>
 
         {/* Nút dropdown */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           disabled={isLoading}
-          className="flex items-center justify-center rounded-r-lg bg-blue-500 px-3 py-3.5 text-white hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm border-l border-blue-400"
+          className="relative flex items-center justify-center rounded-r-lg bg-blue-500 px-3 py-3.5 text-white hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm border-l border-blue-400"
         >
           <ChevronDown className="w-4 h-4" />
         </button>

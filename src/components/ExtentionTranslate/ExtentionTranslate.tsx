@@ -7,7 +7,7 @@ import RiveWrapper from '@/components/Animation/RiveWrapper';
 import vocabularyAPI from '@/apis/vocabulary.api';
 import { useAppDispatch, useAppSelector } from '@/stores/hooks';
 import { setCollections } from '@/stores/reducers/sharedReducer';
-import BookmarkButton from './BtnSave';
+import BookmarkButton from './BookmarkButton';
 import { BookmarkCollection } from '../Vocabulary/MyVocabulary';
 import { toast } from 'react-toastify';
 
@@ -183,7 +183,6 @@ export default function ExtentionTranslate() {
 
   const handleClickBookmark = async (collection: BookmarkCollection) => {
     try {
-      setLoading(true);
       const payload = {name: collection.name, description: collection.description || "", is_default: true, collection_id: collection.id};
       const response = await vocabularyAPI.updateBookmarkCollections(payload)
 
@@ -192,9 +191,7 @@ export default function ExtentionTranslate() {
       }
     } catch (error) {
       console.error('Error updating collection:', error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   }
 
   const handleAddWord = async () => {
@@ -253,7 +250,7 @@ export default function ExtentionTranslate() {
       {!isOpen && (
         <div
           style={{ top: `${position.y}px` }}
-          className="fixed right-0 z-50 flex items-center gap-2 group"
+          className="fixed right-0 z-999 flex items-center gap-2 group"
         >
           {/* Hover Popover */}
           <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
